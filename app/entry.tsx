@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, StyleSheet, TextInput } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput } from 'react-native';
 
 import { Text } from '../core/components/Text';
 import { View } from '../core/components/View';
@@ -37,20 +37,28 @@ export default function EntryModal() {
             placeholderTextColor={colors.secondary}
             style={StyleSheet.flatten([styles.nameInput, { ...typography['bodyLarge'] }])}
           />
-          <View mt="l">
-            {category ? (
-              <Text text={category.name} type="bodyLarge" />
-            ) : (
-              <Text text={t('entry.category')} color="secondary" type="bodyLarge" />
+          <Pressable>
+            {({ pressed }) => (
+              <View mt="l" style={{ opacity: pressed ? 0.5 : 1 }}>
+                {category ? (
+                  <Text text={category.name} type="bodyLarge" />
+                ) : (
+                  <Text text={t('entry.category')} color="secondary" type="bodyLarge" />
+                )}
+              </View>
             )}
-          </View>
-          <View mt="l">
-            {dueDate ? (
-              <Text text={format(dueDate, 'd.MM.yyyy')} type="bodyLarge" />
-            ) : (
-              <Text text={t('entry.dueDate')} color="secondary" type="bodyLarge" />
+          </Pressable>
+          <Pressable>
+            {({ pressed }) => (
+              <View mt="l" style={{ opacity: pressed ? 0.5 : 1 }}>
+                {dueDate ? (
+                  <Text text={format(dueDate, 'd.MM.yyyy')} type="bodyLarge" />
+                ) : (
+                  <Text text={t('entry.dueDate')} color="secondary" type="bodyLarge" />
+                )}
+              </View>
             )}
-          </View>
+          </Pressable>
         </View>
       </View>
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
