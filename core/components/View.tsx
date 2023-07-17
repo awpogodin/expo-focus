@@ -1,10 +1,5 @@
 import { useHeaderHeight } from '@react-navigation/elements';
-import {
-  View as DefaultView,
-  ScrollView,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View as DefaultView, ScrollView, StyleSheet, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Spacings } from '../constants/spacings';

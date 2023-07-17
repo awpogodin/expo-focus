@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable } from 'react-native';
 
+import { ProgressCircle } from '../../core/components/ProgressCircle';
 import { Text } from '../../core/components/Text';
 import { View } from '../../core/components/View';
 import { useTheme } from '../../core/providers/ThemeProvider';
@@ -11,7 +12,6 @@ import { useTheme } from '../../core/providers/ThemeProvider';
 export default function HomeScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const [taskHeight, setTaskHeight] = useState(0);
 
   const handleTaskMenuAction = ({ nativeEvent }: NativeActionEvent) => {
     const selectedActionId = nativeEvent.event;
@@ -59,17 +59,24 @@ export default function HomeScreen() {
             }),
           },
         ]}>
-        <View
-          onLayout={(event) => {
-            setTaskHeight(event.nativeEvent.layout.height);
-          }}>
-          <Text align="center" type="labelLarge" text="Задача 1" mt="xl" />
-          <Text align="center" type="bodySmall" color="secondary" mt="xs" text="Работа" />
-        </View>
+        <Pressable>
+          {({ pressed }) => (
+            <View style={{ opacity: pressed ? 0.5 : 1 }}>
+              <Text align="center" type="labelLarge" text="Задача 1" mt="xl" />
+              <Text align="center" type="bodySmall" color="secondary" mt="xs" text="Работа" />
+            </View>
+          )}
+        </Pressable>
       </MenuView>
       <View flex={1} justifyContent="center">
         <Text align="center" type="bodyLarge" color="secondary" text={t('home.title')} />
         <Text align="center" type="headlineExtraLarge" mt="l" text="25:00" />
+        <View row justifyContent="center" mt="s">
+          <ProgressCircle type="finished" />
+          <ProgressCircle type="inProgress" />
+          <ProgressCircle type="idle" />
+          <ProgressCircle type="idle" />
+        </View>
 
         <View mt="xxl" justifyContent="center" row>
           <Pressable onPress={() => {}}>
