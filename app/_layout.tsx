@@ -85,19 +85,8 @@ function RootLayoutNav() {
                   {({ pressed }) => (
                     <Text
                       type="bodyMedium"
-                      color={pressed ? 'secondary' : 'primary'}
                       text={t('buttons.cancel')}
-                    />
-                  )}
-                </Pressable>
-              ),
-              headerRight: () => (
-                <Pressable onPress={() => {}}>
-                  {({ pressed }) => (
-                    <Text
-                      type="bodyMedium"
-                      color={pressed ? 'secondary' : 'primary'}
-                      text={t('buttons.save')}
+                      style={{ opacity: pressed ? 0.5 : 1 }}
                     />
                   )}
                 </Pressable>

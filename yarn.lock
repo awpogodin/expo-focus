@@ -2172,6 +2172,11 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
+"@react-native-menu/menu@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@react-native-menu/menu/-/menu-0.8.0.tgz#dbf227c2081e5ffd3d2073ee68ecc84cf8639727"
+  integrity sha512-kxiT6ySZsDbBvNWovrKVAfs4AQvAytKIf0f8KQLkVO6eNYMUmONBQPzi6onTTbVujXtZHambo7qr/PcedaR8Tg==
+
 "@react-native/assets@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@react-native/assets/-/assets-1.0.0.tgz#c6f9bf63d274bafc8e970628de24986b30a55c8e"
@@ -8309,6 +8314,13 @@ react-native-codegen@^0.71.5:
     flow-parser "^0.185.0"
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
+
+react-native-date-picker@^4.2.13:
+  version "4.2.13"
+  resolved "https://registry.yarnpkg.com/react-native-date-picker/-/react-native-date-picker-4.2.13.tgz#b5b894ee6c5a154a752f9094342170515e169ea6"
+  integrity sha512-cQ3k+ExXggAnytomeNGNrtV/l2a7WzVUeWKo7Gs2pv/z3TCjjlmKn0ZBMPgcThrFAgFMxgYI0XzKVKT7TPsOmw==
+  dependencies:
+    prop-types "^15.8.1"
 
 react-native-gradle-plugin@^0.71.18:
   version "0.71.19"

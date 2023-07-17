@@ -3,6 +3,7 @@ import { Tabs, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable } from 'react-native';
 
+import { Text } from '../../core/components/Text';
 import { useTheme } from '../../core/providers/ThemeProvider';
 
 /**
@@ -79,6 +80,17 @@ export default function TabLayout() {
         options={{
           title: t('settings.screenTitle'),
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          headerRight: () => (
+            <Pressable>
+              {({ pressed }) => (
+                <Text
+                  type="bodyMedium"
+                  text="Pro upgrade"
+                  style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                />
+              )}
+            </Pressable>
+          ),
         }}
       />
     </Tabs>
