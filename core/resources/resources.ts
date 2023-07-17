@@ -6,9 +6,23 @@ export const resources = {
           title: 'У Вас нет задач',
           description: 'Тут будут отображаться Ваши задачи',
         },
+
+        actionsMenu: {
+          moveToTomorrow: 'Перенести на завтра',
+          moveToWeek: 'Перенести на неделю',
+          moveToLater: 'Перенести на позже',
+          setDueDate: 'Установить срок',
+          remove: 'Удалить',
+        },
       },
       home: {
         title: 'Focus',
+
+        actionsMenu: {
+          moveToInbox: 'Вернуть во входящие',
+          done: 'Выполнено',
+          remove: 'Удалить',
+        },
       },
       buttons: {
         save: 'Сохранить',
@@ -20,9 +34,22 @@ export const resources = {
         name: 'Название',
         category: 'Категория',
         dueDate: 'Срок',
+        categoryPromptTitle: 'Новая категория',
+        categoryPromptSubtitle: 'Введите название категории',
+
+        actionsMenu: {
+          addCategory: 'Добавить категорию',
+          today: 'Сегодня',
+          tomorrow: 'Завтра',
+          selectDate: 'Выбрать дату',
+          clear: 'Очистить',
+        },
       },
       settings: {
         screenTitle: 'Настройки',
+      },
+      common: {
+        minutesShort: '{{value}} мин',
       },
     },
   },
@@ -33,9 +60,23 @@ export const resources = {
           title: 'No tasks',
           description: 'Tasks will be displayed here',
         },
+
+        actionsMenu: {
+          moveToTomorrow: 'Move to tomorrow',
+          moveToWeek: 'Move to week',
+          moveToLater: 'Move to later',
+          setDueDate: 'Set due date',
+          remove: 'Remove',
+        },
       },
       home: {
         title: 'Focus',
+
+        actionsMenu: {
+          moveToInbox: 'Return to inbox',
+          done: 'Done',
+          remove: 'Remove',
+        },
       },
       buttons: {
         save: 'Save',
@@ -47,9 +88,22 @@ export const resources = {
         name: 'Name',
         category: 'Category',
         dueDate: 'Due date',
+        categoryPromptTitle: 'New category',
+        categoryPromptSubtitle: "Enter category's name",
+
+        actionsMenu: {
+          addCategory: 'Add category',
+          today: 'Today',
+          tomorrow: 'Tomorrow',
+          selectDate: 'Select date',
+          clear: 'Clear',
+        },
       },
       settings: {
         screenTitle: 'Settings',
+      },
+      common: {
+        minutesShort: '{{value}} min',
       },
     },
   },

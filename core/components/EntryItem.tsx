@@ -1,6 +1,7 @@
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { MenuView } from '@react-native-menu/menu';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Platform, Pressable } from 'react-native';
 
 import { Text } from './Text';
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export const EntryItem: React.FC<Props> = ({ data }) => {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const { name, category, dueDate } = data;
   const isOverdued = name === 'Задача 1';
@@ -27,29 +29,29 @@ export const EntryItem: React.FC<Props> = ({ data }) => {
           subactions: [
             {
               id: 'to-tomorrow',
-              title: 'Перенести на завтра',
+              title: t('entries.actionsMenu.moveToTomorrow'),
             },
             {
               id: 'to-week',
-              title: 'Перенести на неделю',
+              title: t('entries.actionsMenu.moveToWeek'),
             },
             {
               id: 'to-later',
-              title: 'Перенести на позже',
+              title: t('entries.actionsMenu.moveToLater'),
             },
             {
               id: 'custom',
+              title: t('entries.actionsMenu.setDueDate'),
               image: Platform.select({
                 ios: 'calendar',
                 android: 'ic_menu_add',
               }),
-              title: 'Установить срок',
             },
           ],
         },
         {
           id: 'clear',
-          title: 'Удалить',
+          title: t('entries.actionsMenu.remove'),
           attributes: {
             destructive: true,
           },

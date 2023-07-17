@@ -17,66 +17,6 @@ const categories = [
   { id: '2', name: 'Личное' },
 ];
 
-const menuActions = [
-  {
-    id: 'add',
-    titleColor: '#2367A2',
-    image: Platform.select({
-      ios: 'plus',
-      android: 'ic_menu_add',
-    }),
-    imageColor: '#2367A2',
-    subactions: [
-      {
-        id: 'nested1',
-        title: 'Nested action',
-        titleColor: 'rgba(250,180,100,0.5)',
-        subtitle: 'State is mixed',
-        image: Platform.select({
-          ios: 'heart.fill',
-          android: 'ic_menu_today',
-        }),
-        imageColor: 'rgba(100,200,250,0.3)',
-        state: 'mixed',
-      },
-      {
-        id: 'nestedDestructive',
-        title: 'Destructive Action',
-        attributes: {
-          destructive: true,
-        },
-        image: Platform.select({
-          ios: 'trash',
-          android: 'ic_menu_delete',
-        }),
-      },
-    ],
-  },
-  {
-    id: 'share',
-    title: 'Share Action',
-    titleColor: '#46F289',
-    subtitle: 'Share action on SNS',
-    image: Platform.select({
-      ios: 'square.and.arrow.up',
-      android: 'ic_menu_share',
-    }),
-    imageColor: '#46F289',
-    state: 'on',
-  },
-  {
-    id: 'destructive',
-    title: 'Destructive Action',
-    attributes: {
-      destructive: true,
-    },
-    image: Platform.select({
-      ios: 'trash',
-      android: 'ic_menu_delete',
-    }),
-  },
-];
-
 const NEW_ITEM_MENU_ACTION_ID = 'new-category';
 
 export default function EntryModal() {
@@ -94,15 +34,17 @@ export default function EntryModal() {
     router.push('../');
   };
 
+  const isSubmitDisabled = true;
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Pressable onPress={handleSubmit}>
+        <Pressable onPress={handleSubmit} disabled={isSubmitDisabled}>
           {({ pressed }) => (
             <Text
               type="bodyMedium"
               text={t('buttons.save')}
-              style={{ opacity: pressed ? 0.5 : 1 }}
+              style={{ opacity: pressed || isSubmitDisabled ? 0.5 : 1 }}
             />
           )}
         </Pressable>
@@ -118,8 +60,8 @@ export default function EntryModal() {
     const selectedActionId = nativeEvent.event;
     if (selectedActionId === NEW_ITEM_MENU_ACTION_ID) {
       Alert.prompt(
-        'Новая категория',
-        'Введите название категории',
+        t('entry.categoryPromptTitle'),
+        t('entry.categoryPromptSubtitle'),
         (v) => {
           const categoryName = upperFirst(v.substring(0, 12));
           console.log('new category = ', categoryName);
@@ -173,7 +115,7 @@ export default function EntryModal() {
             actions={[
               {
                 id: NEW_ITEM_MENU_ACTION_ID,
-                title: 'Добавить категорию',
+                title: t('entry.actionsMenu.addCategory'),
                 image: Platform.select({
                   ios: 'plus',
                   android: 'ic_menu_add',
@@ -211,11 +153,11 @@ export default function EntryModal() {
                 subactions: [
                   {
                     id: 'today',
-                    title: 'Cегодня',
+                    title: t('entry.actionsMenu.today'),
                   },
                   {
                     id: 'tomorrow',
-                    title: 'Завтра',
+                    title: t('entry.actionsMenu.tomorrow'),
                   },
                   {
                     id: 'custom',
@@ -223,13 +165,13 @@ export default function EntryModal() {
                       ios: 'calendar',
                       android: 'ic_menu_add',
                     }),
-                    title: 'Выбрать дату',
+                    title: t('entry.actionsMenu.selectDate'),
                   },
                 ],
               },
               {
                 id: 'clear',
-                title: 'Очистить',
+                title: t('entry.actionsMenu.clear'),
                 attributes: {
                   destructive: true,
                 },

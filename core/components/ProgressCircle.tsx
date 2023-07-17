@@ -1,11 +1,4 @@
 import { StyleSheet } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
 
 import { View } from './View';
 import { useTheme } from '../providers/ThemeProvider';
@@ -22,14 +15,6 @@ export const ProgressCircle: React.FC<Props> = ({ type }) => {
   let backgroundColor = 'transparent';
   let opacity = 1;
 
-  const sharedOpacity = useSharedValue(0.3);
-
-  sharedOpacity.value = withRepeat(
-    withTiming(1, { duration: 1000, easing: Easing.ease }),
-    -1,
-    true
-  );
-
   if (type === 'idle') {
     opacity = 0.3;
   }
@@ -38,19 +23,15 @@ export const ProgressCircle: React.FC<Props> = ({ type }) => {
     backgroundColor = colors.primary;
   }
 
-  const style = useAnimatedStyle(() => ({
+  const style = {
     ...styles.circle,
     backgroundColor,
     borderColor,
     borderWidth: 2,
-    opacity: type === 'inProgress' ? sharedOpacity.value : opacity,
-  }));
+    opacity,
+  };
 
-  return (
-    <View mh="xxs">
-      <Animated.View style={style} />
-    </View>
-  );
+  return <View mh="xxs" style={style} />;
 };
 
 const styles = StyleSheet.create({

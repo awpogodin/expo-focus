@@ -1,3 +1,4 @@
+import React from 'react';
 import { Text as DefaultText, StyleSheet } from 'react-native';
 
 import { Spacings } from '../constants/spacings';
@@ -30,7 +31,7 @@ export type TextProps = {
   ph?: keyof typeof Spacings;
 } & DefaultText['props'];
 
-export const Text: React.FC<TextProps> = (props) => {
+export const Text = React.forwardRef<DefaultText, TextProps>((props, ref) => {
   const {
     text,
     color = 'primary',
@@ -78,8 +79,8 @@ export const Text: React.FC<TextProps> = (props) => {
   ]);
 
   return (
-    <DefaultText style={styles} {...rest}>
+    <DefaultText ref={ref} style={styles} {...rest}>
       {text}
     </DefaultText>
   );
-};
+});
