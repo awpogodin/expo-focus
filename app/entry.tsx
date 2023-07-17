@@ -1,7 +1,8 @@
 import { MenuView, NativeActionEvent } from '@react-native-menu/menu';
-import { format } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import { useNavigation, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { upperFirst } from 'lodash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, Pressable, StyleSheet, TextInput } from 'react-native';
@@ -116,9 +117,15 @@ export default function EntryModal() {
   const handleCategoryMenuAction = ({ nativeEvent }: NativeActionEvent) => {
     const selectedActionId = nativeEvent.event;
     if (selectedActionId === NEW_ITEM_MENU_ACTION_ID) {
-      Alert.prompt('Добавить категорию', 'Введите название категории', (v) => {
-        console.log('new category = ', v);
-      });
+      Alert.prompt(
+        'Новая категория',
+        'Введите название категории',
+        (v) => {
+          const categoryName = upperFirst(v.substring(0, 12));
+          console.log('new category = ', categoryName);
+        },
+        'plain-text'
+      );
       return;
     }
     setCategoryId(selectedActionId);
@@ -126,8 +133,17 @@ export default function EntryModal() {
 
   const handleDateMenuAction = ({ nativeEvent }: NativeActionEvent) => {
     const selectedActionId = nativeEvent.event;
+    if (selectedActionId === 'today') {
+      setDueDate(new Date());
+      return;
+    }
+    if (selectedActionId === 'tomorrow') {
+      setDueDate(addDays(new Date(), 1));
+      return;
+    }
     if (selectedActionId === 'custom') {
       setOpen(true);
+      return;
     }
     if (selectedActionId === 'clear') {
       setDueDate(undefined);
@@ -174,13 +190,17 @@ export default function EntryModal() {
                 ],
               },
             ]}>
-            <View mt="l">
-              {category ? (
-                <Text text={category.name} type="bodyLarge" />
-              ) : (
-                <Text text={t('entry.category')} color="secondary" type="bodyLarge" />
+            <Pressable>
+              {({ pressed }) => (
+                <View mt="l" style={{ opacity: pressed ? 0.5 : 1 }}>
+                  {category ? (
+                    <Text text={category.name} type="bodyLarge" />
+                  ) : (
+                    <Text text={t('entry.category')} color="secondary" type="bodyLarge" />
+                  )}
+                </View>
               )}
-            </View>
+            </Pressable>
           </MenuView>
           <MenuView
             onPressAction={handleDateMenuAction}
@@ -220,13 +240,17 @@ export default function EntryModal() {
                 }),
               },
             ]}>
-            <View mt="l">
-              {dueDate ? (
-                <Text text={format(dueDate, 'd.MM.yyyy')} type="bodyLarge" />
-              ) : (
-                <Text text={t('entry.dueDate')} color="secondary" type="bodyLarge" />
+            <Pressable>
+              {({ pressed }) => (
+                <View mt="l" style={{ opacity: pressed ? 0.5 : 1 }}>
+                  {dueDate ? (
+                    <Text text={format(dueDate, 'd.MM.yyyy')} type="bodyLarge" />
+                  ) : (
+                    <Text text={t('entry.dueDate')} color="secondary" type="bodyLarge" />
+                  )}
+                </View>
               )}
-            </View>
+            </Pressable>
           </MenuView>
         </View>
       </View>
