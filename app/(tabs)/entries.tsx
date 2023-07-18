@@ -47,13 +47,13 @@ export default function EntriesScreen() {
   }: {
     section: SectionListData<Entry, Section>;
   }) => (
-    <View row justifyContent="space-between" pt="xl" color="background">
+    <View row justifyContent="space-between" mh="l" pt="xl" color="background">
       <Text text={title} type="bodyMedium" color={isInbox ? 'primary' : 'secondary'} />
       <Text text={total.toString()} type="bodyMedium" color={isInbox ? 'primary' : 'secondary'} />
     </View>
   );
   return (
-    <View flex={1} color="background" ph="l">
+    <View flex={1} color="background">
       <View flex={1}>
         {data.length ? (
           <SectionList<Entry, Section>

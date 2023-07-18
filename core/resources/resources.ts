@@ -50,6 +50,9 @@ export const resources = {
       },
       common: {
         minutesShort: '{{value}} мин',
+        configure: 'Настроить',
+        shortBreak: 'Короткий перерыв',
+        longBreak: 'Длинный перерыв',
       },
     },
   },
@@ -104,6 +107,9 @@ export const resources = {
       },
       common: {
         minutesShort: '{{value}} min',
+        configure: 'Configure',
+        shortBreak: 'Short break',
+        longBreak: 'Long break',
       },
     },
   },

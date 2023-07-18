@@ -1,8 +1,8 @@
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
-import { MenuView } from '@react-native-menu/menu';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
+import { ContextMenuView } from 'react-native-ios-context-menu';
 
 import { Text } from './Text';
 import { View } from './View';
@@ -19,50 +19,57 @@ export const EntryItem: React.FC<Props> = ({ data }) => {
   const { name, category, dueDate } = data;
   const isOverdued = name === 'Задача 1';
 
-  return (
-    <MenuView
-      shouldOpenOnLongPress
-      actions={[
-        {
-          title: '',
-          displayInline: true,
-          subactions: [
-            {
-              id: 'to-tomorrow',
-              title: t('entries.actionsMenu.moveToTomorrow'),
-            },
-            {
-              id: 'to-week',
-              title: t('entries.actionsMenu.moveToWeek'),
-            },
-            {
-              id: 'to-later',
-              title: t('entries.actionsMenu.moveToLater'),
-            },
-            {
-              id: 'custom',
-              title: t('entries.actionsMenu.setDueDate'),
-              image: Platform.select({
-                ios: 'calendar',
-                android: 'ic_menu_add',
-              }),
-            },
-          ],
-        },
-        {
-          id: 'clear',
-          title: t('entries.actionsMenu.remove'),
-          attributes: {
-            destructive: true,
+  const menuConfig: React.ComponentProps<typeof ContextMenuView>['menuConfig'] = {
+    menuTitle: '',
+    menuItems: [
+      {
+        type: 'menu',
+        menuTitle: '',
+        menuOptions: ['displayInline'],
+        menuItems: [
+          {
+            actionKey: 'move-to-tomorrow',
+            actionTitle: t('entries.actionsMenu.moveToTomorrow'),
           },
-          imageColor: colors.danger,
-          image: Platform.select({
-            ios: 'trash',
-            android: 'ic_menu_delete',
-          }),
+          {
+            actionKey: 'move-to-week',
+            actionTitle: t('entries.actionsMenu.moveToWeek'),
+          },
+          {
+            actionKey: 'move-to-later',
+            actionTitle: t('entries.actionsMenu.moveToLater'),
+          },
+          {
+            actionKey: 'set-due-date',
+            actionTitle: t('entries.actionsMenu.setDueDate'),
+            icon: {
+              type: 'IMAGE_SYSTEM',
+              imageValue: {
+                systemName: 'calendar',
+                scale: 'small',
+              },
+            },
+          },
+        ],
+      },
+      {
+        actionKey: 'remove',
+        actionTitle: t('entries.actionsMenu.remove'),
+        menuAttributes: ['destructive'],
+        icon: {
+          type: 'IMAGE_SYSTEM',
+          imageValue: {
+            systemName: 'trash',
+            scale: 'small',
+          },
         },
-      ]}>
-      <View row alignItems="center" mt="l">
+      },
+    ],
+  };
+
+  return (
+    <ContextMenuView menuConfig={menuConfig}>
+      <View row alignItems="center" mh="l" mt="l">
         <View flex={1}>
           <Text text={name} type="labelLarge" />
           <View row>
@@ -96,6 +103,6 @@ export const EntryItem: React.FC<Props> = ({ data }) => {
           )}
         </Pressable>
       </View>
-    </MenuView>
+    </ContextMenuView>
   );
 };

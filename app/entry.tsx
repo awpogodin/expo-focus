@@ -1,4 +1,3 @@
-import { MenuView, NativeActionEvent } from '@react-native-menu/menu';
 import { addDays, format } from 'date-fns';
 import { useNavigation, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -7,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, Pressable, StyleSheet, TextInput } from 'react-native';
 import DatePicker from 'react-native-date-picker';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 
 import { Text } from '../core/components/Text';
 import { View } from '../core/components/View';
@@ -16,8 +16,6 @@ const categories = [
   { id: '1', name: 'Работа' },
   { id: '2', name: 'Личное' },
 ];
-
-const NEW_ITEM_MENU_ACTION_ID = 'new-category';
 
 export default function EntryModal() {
   const { t } = useTranslation();
@@ -56,9 +54,11 @@ export default function EntryModal() {
     setName(v);
   };
 
-  const handleCategoryMenuAction = ({ nativeEvent }: NativeActionEvent) => {
-    const selectedActionId = nativeEvent.event;
-    if (selectedActionId === NEW_ITEM_MENU_ACTION_ID) {
+  const handleCategoryMenuAction: React.ComponentProps<
+    typeof ContextMenuButton
+  >['onPressMenuItem'] = ({ nativeEvent }) => {
+    const selectedActionId = nativeEvent.actionKey;
+    if (selectedActionId === 'new-category') {
       Alert.prompt(
         t('entry.categoryPromptTitle'),
         t('entry.categoryPromptSubtitle'),
@@ -73,26 +73,97 @@ export default function EntryModal() {
     setCategoryId(selectedActionId);
   };
 
-  const handleDateMenuAction = ({ nativeEvent }: NativeActionEvent) => {
-    const selectedActionId = nativeEvent.event;
-    if (selectedActionId === 'today') {
+  const handleDateMenuAction: React.ComponentProps<typeof ContextMenuButton>['onPressMenuItem'] = ({
+    nativeEvent,
+  }) => {
+    const selectedActionId = nativeEvent.actionKey;
+    if (selectedActionId === 'date-today') {
       setDueDate(new Date());
-      return;
     }
-    if (selectedActionId === 'tomorrow') {
+    if (selectedActionId === 'date-tomorrow') {
       setDueDate(addDays(new Date(), 1));
-      return;
     }
-    if (selectedActionId === 'custom') {
+    if (selectedActionId === 'date-custom') {
       setOpen(true);
-      return;
     }
-    if (selectedActionId === 'clear') {
+    if (selectedActionId === 'date-clear') {
       setDueDate(undefined);
     }
   };
 
   const category = categories.find(({ id }) => id === categoryId);
+
+  const categoryMenuConfig: React.ComponentProps<typeof ContextMenuButton>['menuConfig'] = {
+    menuTitle: '',
+    menuItems: [
+      {
+        actionKey: 'new-category',
+        actionTitle: t('entry.actionsMenu.addCategory'),
+        icon: {
+          type: 'IMAGE_SYSTEM',
+          imageValue: {
+            systemName: 'plus',
+            scale: 'small',
+          },
+        },
+      },
+      {
+        type: 'menu',
+        menuTitle: '',
+        menuOptions: ['displayInline'],
+        menuItems: [
+          ...categories.map(({ id, name }) => ({
+            actionKey: id.toString(),
+            actionTitle: name,
+          })),
+        ],
+      },
+    ],
+  };
+
+  const dateMenuConfig: React.ComponentProps<typeof ContextMenuButton>['menuConfig'] = {
+    menuTitle: '',
+    menuItems: [
+      {
+        type: 'menu',
+        menuTitle: '',
+        menuOptions: ['displayInline'],
+        menuItems: [
+          {
+            actionKey: 'date-today',
+            actionTitle: t('entry.actionsMenu.today'),
+          },
+          {
+            actionKey: 'date-tomorrow',
+            actionTitle: t('entry.actionsMenu.tomorrow'),
+          },
+          {
+            actionKey: 'date-custom',
+            actionTitle: t('entry.actionsMenu.selectDate'),
+            icon: {
+              type: 'IMAGE_SYSTEM',
+              imageValue: {
+                systemName: 'calendar',
+                scale: 'small',
+              },
+            },
+          },
+        ],
+      },
+      {
+        actionKey: 'date-clear',
+        actionTitle: t('entry.actionsMenu.clear'),
+        menuAttributes: ['destructive'],
+        icon: {
+          type: 'IMAGE_SYSTEM',
+          imageValue: {
+            systemName: 'trash',
+            scale: 'small',
+          },
+        },
+      },
+    ],
+  };
 
   return (
     <>
@@ -110,28 +181,10 @@ export default function EntryModal() {
             autoFocus
             onSubmitEditing={handleSubmit}
           />
-          <MenuView
-            onPressAction={handleCategoryMenuAction}
-            actions={[
-              {
-                id: NEW_ITEM_MENU_ACTION_ID,
-                title: t('entry.actionsMenu.addCategory'),
-                image: Platform.select({
-                  ios: 'plus',
-                  android: 'ic_menu_add',
-                }),
-              },
-              {
-                title: '',
-                displayInline: true,
-                subactions: [
-                  ...categories.map(({ id, name }) => ({
-                    id: id.toString(),
-                    title: name,
-                  })),
-                ],
-              },
-            ]}>
+          <ContextMenuButton
+            isMenuPrimaryAction
+            menuConfig={categoryMenuConfig}
+            onPressMenuItem={handleCategoryMenuAction}>
             <Pressable>
               {({ pressed }) => (
                 <View mt="l" style={{ opacity: pressed ? 0.5 : 1 }}>
@@ -143,45 +196,11 @@ export default function EntryModal() {
                 </View>
               )}
             </Pressable>
-          </MenuView>
-          <MenuView
-            onPressAction={handleDateMenuAction}
-            actions={[
-              {
-                title: '',
-                displayInline: true,
-                subactions: [
-                  {
-                    id: 'today',
-                    title: t('entry.actionsMenu.today'),
-                  },
-                  {
-                    id: 'tomorrow',
-                    title: t('entry.actionsMenu.tomorrow'),
-                  },
-                  {
-                    id: 'custom',
-                    image: Platform.select({
-                      ios: 'calendar',
-                      android: 'ic_menu_add',
-                    }),
-                    title: t('entry.actionsMenu.selectDate'),
-                  },
-                ],
-              },
-              {
-                id: 'clear',
-                title: t('entry.actionsMenu.clear'),
-                attributes: {
-                  destructive: true,
-                },
-                imageColor: colors.danger,
-                image: Platform.select({
-                  ios: 'trash',
-                  android: 'ic_menu_delete',
-                }),
-              },
-            ]}>
+          </ContextMenuButton>
+          <ContextMenuButton
+            isMenuPrimaryAction
+            menuConfig={dateMenuConfig}
+            onPressMenuItem={handleDateMenuAction}>
             <Pressable>
               {({ pressed }) => (
                 <View mt="l" style={{ opacity: pressed ? 0.5 : 1 }}>
@@ -193,7 +212,7 @@ export default function EntryModal() {
                 </View>
               )}
             </Pressable>
-          </MenuView>
+          </ContextMenuButton>
         </View>
       </View>
       <DatePicker

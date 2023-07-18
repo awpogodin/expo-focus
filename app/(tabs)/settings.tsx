@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Platform, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 
 import { MenuItem } from '../../core/components/MenuItem';
 import { View } from '../../core/components/View';
@@ -16,159 +16,148 @@ export default function SettingsScreen() {
       title: 'Продолжительность focus',
       description: 'Продолжительность времени фокусировки',
       value: t('common.minutesShort', { value: 25 }),
-      actions: [
-        {
-          title: '',
-          displayInline: true,
-          subactions: [
-            {
-              id: '15',
-              title: t('common.minutesShort', { value: 15 }),
-            },
-            {
-              id: '20',
-              title: t('common.minutesShort', { value: 20 }),
-            },
-            {
-              id: '25',
-              title: t('common.minutesShort', { value: 25 }),
-              state: 'on',
-            },
-            {
-              id: '30',
-              title: t('common.minutesShort', { value: 30 }),
-            },
-            {
-              id: '45',
-              title: t('common.minutesShort', { value: 45 }),
-            },
-            {
-              id: '50',
-              title: t('common.minutesShort', { value: 50 }),
-            },
-            {
-              id: '60',
-              title: t('common.minutesShort', { value: 60 }),
-            },
-          ],
-        },
-        {
-          id: 'custom',
-          title: 'Настроить',
-          image: Platform.select({
-            ios: 'lock.fill',
-            android: 'ic_menu_add',
-          }),
-          attributes: {
-            disabled: true,
+      menuConfig: {
+        menuTitle: '',
+        menuItems: [
+          {
+            type: 'menu',
+            menuTitle: '',
+            menuOptions: ['displayInline'],
+            menuItems: [
+              {
+                actionKey: 'focus-duration-15',
+                actionTitle: t('common.minutesShort', { value: 15 }),
+              },
+              {
+                actionKey: 'focus-duration-20',
+                actionTitle: t('common.minutesShort', { value: 20 }),
+              },
+            ],
           },
-        },
-      ],
+          {
+            actionKey: 'focus-duration-custom',
+            actionTitle: t('common.configure'),
+            menuAttributes: ['disabled'],
+            icon: {
+              type: 'IMAGE_SYSTEM',
+              imageValue: {
+                systemName: 'lock.fill',
+                scale: 'small',
+              },
+            },
+          },
+        ],
+      },
     },
     {
       id: 2,
       title: 'Продолжительность перерыва',
       description: 'Продолжительность короткого и длинного перерывов',
       value: t('common.minutesShort', { value: '5, 20' }),
-      actions: [
-        {
-          title: 'Короткий перерыв',
-          displayInline: true,
-          subactions: [
-            {
-              id: '5',
-              title: t('common.minutesShort', { value: 5 }),
-              state: 'on',
-            },
-            {
-              id: '10',
-              title: t('common.minutesShort', { value: 10 }),
-            },
-          ],
-        },
-        {
-          id: 'custom',
-          title: 'Настроить',
-          image: Platform.select({
-            ios: 'lock.fill',
-            android: 'ic_menu_add',
-          }),
-          attributes: {
-            disabled: true,
+      menuConfig: {
+        menuTitle: '',
+        menuItems: [
+          {
+            type: 'menu',
+            menuTitle: t('common.shortBreak'),
+            menuOptions: ['displayInline'],
+            menuItems: [
+              {
+                actionKey: 'short-break-duration-5',
+                actionTitle: t('common.minutesShort', { value: 5 }),
+              },
+              {
+                actionKey: 'short-break-duration-10',
+                actionTitle: t('common.minutesShort', { value: 10 }),
+              },
+              {
+                actionKey: 'short-break-duration-custom',
+                actionTitle: t('common.configure'),
+                menuAttributes: ['disabled'],
+                icon: {
+                  type: 'IMAGE_SYSTEM',
+                  imageValue: {
+                    systemName: 'lock.fill',
+                    scale: 'small',
+                  },
+                },
+              },
+            ],
           },
-        },
-        {
-          title: 'Длинный перерыв',
-          displayInline: true,
-          subactions: [
-            {
-              id: '15',
-              title: t('common.minutesShort', { value: 15 }),
-            },
-            {
-              id: '20',
-              title: t('common.minutesShort', { value: 20 }),
-              state: 'on',
-            },
-            {
-              id: '30',
-              title: t('common.minutesShort', { value: 30 }),
-            },
-          ],
-        },
-        {
-          id: 'custom',
-          title: 'Настроить',
-          image: Platform.select({
-            ios: 'lock.fill',
-            android: 'ic_menu_add',
-          }),
-          attributes: {
-            disabled: true,
+          {
+            type: 'menu',
+            menuTitle: t('common.longBreak'),
+            menuOptions: ['displayInline'],
+            menuItems: [
+              {
+                actionKey: 'long-break-duration-15',
+                actionTitle: t('common.minutesShort', { value: 15 }),
+              },
+              {
+                actionKey: 'long-break-duration-20',
+                actionTitle: t('common.minutesShort', { value: 20 }),
+              },
+              {
+                actionKey: 'long-break-duration-30',
+                actionTitle: t('common.minutesShort', { value: 30 }),
+              },
+              {
+                actionKey: 'long-break-duration-custom',
+                actionTitle: t('common.configure'),
+                menuAttributes: ['disabled'],
+                icon: {
+                  type: 'IMAGE_SYSTEM',
+                  imageValue: {
+                    systemName: 'lock.fill',
+                    scale: 'small',
+                  },
+                },
+              },
+            ],
           },
-        },
-      ],
+        ],
+      },
     },
     {
       id: 3,
       title: 'Цикл',
       value: '4',
-      actions: [
-        {
-          title: '',
-          displayInline: true,
-          subactions: [
-            {
-              id: '1',
-              title: '1',
-            },
-            {
-              id: '2',
-              title: '2',
-            },
-            {
-              id: '3',
-              title: '3',
-            },
-            {
-              id: '4',
-              title: '4',
-              state: 'on',
-            },
-          ],
-        },
-        {
-          id: 'custom',
-          title: 'Настроить',
-          image: Platform.select({
-            ios: 'lock.fill',
-            android: 'ic_menu_add',
-          }),
-          attributes: {
-            disabled: true,
+      menuConfig: {
+        menuTitle: '',
+        menuItems: [
+          {
+            type: 'menu',
+            menuTitle: '',
+            menuOptions: ['displayInline'],
+            menuItems: [
+              {
+                actionKey: 'focus-loops-2',
+                actionTitle: '2',
+              },
+              {
+                actionKey: 'focus-loops-3',
+                actionTitle: '3',
+              },
+              {
+                actionKey: 'focus-loops-4',
+                actionTitle: '4',
+              },
+            ],
           },
-        },
-      ],
+          {
+            actionKey: 'focus-loops-custom',
+            actionTitle: t('common.configure'),
+            menuAttributes: ['disabled'],
+            icon: {
+              type: 'IMAGE_SYSTEM',
+              imageValue: {
+                systemName: 'lock.fill',
+                scale: 'small',
+              },
+            },
+          },
+        ],
+      },
       disabled: true,
     },
     {
@@ -176,26 +165,30 @@ export default function SettingsScreen() {
       title: 'Тема приложения',
       description: 'Выберите тему приложения',
       value: 'Авто',
-      actions: [
-        {
-          title: '',
-          displayInline: true,
-          subactions: [
-            {
-              id: 'light',
-              title: 'Светлая',
-            },
-            {
-              id: 'dark',
-              title: 'Темная',
-            },
-          ],
-        },
-        {
-          id: 'auto',
-          title: 'Авто',
-        },
-      ],
+      menuConfig: {
+        menuTitle: '',
+        menuItems: [
+          {
+            type: 'menu',
+            menuTitle: '',
+            menuOptions: ['displayInline'],
+            menuItems: [
+              {
+                actionKey: 'theme-light',
+                actionTitle: 'Светлая',
+              },
+              {
+                actionKey: 'theme-dark',
+                actionTitle: 'Темная',
+              },
+            ],
+          },
+          {
+            actionKey: 'theme-auto',
+            actionTitle: 'Авто',
+          },
+        ],
+      },
     },
     {
       id: 5,
@@ -217,32 +210,18 @@ export default function SettingsScreen() {
   return (
     <View flex={1} color="background" ph="l">
       <ScrollView>
-        {items.map(
-          ({
-            id,
-            title,
-            description,
-            value,
-            disabled,
-            onPress,
-            actions,
-            menuViewTitle,
-            onPressAction,
-          }) => (
-            <View key={id} mt="xl">
-              <MenuItem
-                title={title}
-                description={description}
-                value={value}
-                disabled={disabled}
-                onPress={onPress}
-                actions={actions}
-                menuViewTitle={menuViewTitle}
-                onPressAction={onPressAction}
-              />
-            </View>
-          )
-        )}
+        {items.map(({ id, title, description, value, disabled, onPress, menuConfig }) => (
+          <View key={id} mt="xl">
+            <MenuItem
+              title={title}
+              description={description}
+              value={value}
+              disabled={disabled}
+              onPress={onPress}
+              menuConfig={menuConfig}
+            />
+          </View>
+        ))}
       </ScrollView>
     </View>
   );

@@ -1,10 +1,10 @@
 import { AntDesign } from '@expo/vector-icons';
-import { MenuView, NativeActionEvent } from '@react-native-menu/menu';
 import { intervalToDuration } from 'date-fns';
 import { useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
+import { ContextMenuView } from 'react-native-ios-context-menu';
 import Animated, {
   cancelAnimation,
   useSharedValue,
@@ -55,9 +55,10 @@ export default function HomeScreen() {
     });
   }, []);
 
-  const handleTaskMenuAction = ({ nativeEvent }: NativeActionEvent) => {
-    const selectedActionId = nativeEvent.event;
-    console.log('selectedId = ', selectedActionId);
+  const handleTaskMenuAction: React.ComponentProps<typeof ContextMenuView>['onPressMenuItem'] = ({
+    nativeEvent,
+  }) => {
+    console.log('selectedId = ', nativeEvent.actionKey);
   };
 
   // region timer
@@ -121,56 +122,63 @@ export default function HomeScreen() {
   // }
   // endregion
 
+  const currentTaskMenuConfig: React.ComponentProps<typeof ContextMenuButton>['menuConfig'] = {
+    menuTitle: '',
+    menuItems: [
+      {
+        type: 'menu',
+        menuTitle: '',
+        menuOptions: ['displayInline'],
+        menuItems: [
+          {
+            actionKey: 'move-to-inbox',
+            actionTitle: t('home.actionsMenu.moveToInbox'),
+            icon: {
+              type: 'IMAGE_SYSTEM',
+              imageValue: {
+                systemName: 'tray.and.arrow.down.fill',
+                scale: 'small',
+              },
+            },
+          },
+          {
+            actionKey: 'done',
+            actionTitle: t('home.actionsMenu.done'),
+            icon: {
+              type: 'IMAGE_SYSTEM',
+              imageValue: {
+                systemName: 'checkmark',
+                scale: 'small',
+              },
+            },
+          },
+        ],
+      },
+      {
+        actionKey: 'clear',
+        actionTitle: t('home.actionsMenu.remove'),
+        menuAttributes: ['destructive'],
+        icon: {
+          type: 'IMAGE_SYSTEM',
+          imageValue: {
+            systemName: 'trash',
+            scale: 'small',
+          },
+        },
+      },
+    ],
+  };
+
   return (
     <View ph="l" color="background" flex={1}>
-      <MenuView
-        onPressAction={handleTaskMenuAction}
-        actions={[
-          {
-            title: '',
-            displayInline: true,
-            subactions: [
-              {
-                id: 'move-to-inbox',
-                title: t('home.actionsMenu.moveToInbox'),
-                image: Platform.select({
-                  ios: 'tray.and.arrow.down.fill',
-                  android: 'ic_menu_add',
-                }),
-              },
-              {
-                id: 'done',
-                title: t('home.actionsMenu.done'),
-                imageColor: colors.success,
-                image: Platform.select({
-                  ios: 'checkmark',
-                  android: 'ic_menu_add',
-                }),
-              },
-            ],
-          },
-          {
-            id: 'clear',
-            title: t('home.actionsMenu.remove'),
-            attributes: {
-              destructive: true,
-            },
-            imageColor: colors.danger,
-            image: Platform.select({
-              ios: 'trash',
-              android: 'ic_menu_delete',
-            }),
-          },
-        ]}>
+      <ContextMenuView menuConfig={currentTaskMenuConfig} onPressMenuItem={handleTaskMenuAction}>
         <Pressable>
-          {({ pressed }) => (
-            <View style={{ opacity: pressed ? 0.5 : 1 }}>
-              <Text align="center" type="labelLarge" text="Задача 1" mt="xl" />
-              <Text align="center" type="bodySmall" color="secondary" mt="xs" text="Работа" />
-            </View>
-          )}
+          <View mt="xl">
+            <Text align="center" type="labelLarge" text="Задача 1" />
+            <Text align="center" type="bodySmall" color="secondary" mt="xs" text="Работа" />
+          </View>
         </Pressable>
-      </MenuView>
+      </ContextMenuView>
       <View flex={1} justifyContent="center">
         <Text align="center" type="bodyLarge" color="secondary" text={t('home.title')} />
         <AnimatedText

@@ -61,18 +61,6 @@ export default function TabLayout() {
         options={{
           title: '',
           tabBarIcon: ({ color }) => <TabBarIcon name="circle-o-notch" color={color} />,
-          headerRight: () => (
-            <Pressable onPress={() => {}}>
-              {({ pressed }) => (
-                <AntDesign
-                  name="reload1"
-                  size={25}
-                  color={colors.primary}
-                  style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                />
-              )}
-            </Pressable>
-          ),
         }}
       />
       <Tabs.Screen

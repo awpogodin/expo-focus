@@ -1,5 +1,5 @@
-import { MenuView } from '@react-native-menu/menu';
 import { Pressable, PressableStateCallbackType } from 'react-native';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 
 import { Text } from './Text';
 import { View } from './View';
@@ -8,11 +8,9 @@ type Props = {
   title: string;
   description?: string;
   value?: string;
-  onPress?(): void;
+  onPress?(id?: string): void;
   disabled?: boolean;
-  menuViewTitle?: React.ComponentProps<typeof MenuView>['title'];
-  actions?: React.ComponentProps<typeof MenuView>['actions'];
-  onPressAction?: React.ComponentProps<typeof MenuView>['onPressAction'];
+  menuConfig?: React.ComponentProps<typeof ContextMenuButton>['menuConfig'];
 };
 
 export const MenuItem: React.FC<Props> = ({
@@ -21,10 +19,13 @@ export const MenuItem: React.FC<Props> = ({
   value,
   onPress,
   disabled,
-  menuViewTitle,
-  actions,
-  onPressAction,
+  menuConfig,
 }) => {
+  const handlePress = () => onPress?.();
+  const handlePressMenuItem: React.ComponentProps<typeof ContextMenuButton>['onPressMenuItem'] = ({
+    nativeEvent,
+  }) => onPress?.(nativeEvent.actionKey);
+
   const renderContent = ({ pressed }: PressableStateCallbackType) => (
     <View row alignItems="center" style={{ opacity: pressed || disabled ? 0.5 : 1 }}>
       <View flex={1}>
@@ -35,16 +36,19 @@ export const MenuItem: React.FC<Props> = ({
     </View>
   );
 
-  if (actions?.length && !disabled) {
+  if (menuConfig && !disabled) {
     return (
-      <MenuView title={menuViewTitle} actions={actions} onPressAction={onPressAction}>
+      <ContextMenuButton
+        isMenuPrimaryAction
+        menuConfig={menuConfig}
+        onPressMenuItem={handlePressMenuItem}>
         <Pressable disabled={disabled}>{renderContent}</Pressable>
-      </MenuView>
+      </ContextMenuButton>
     );
   }
 
   return (
-    <Pressable onPress={onPress} disabled={disabled}>
+    <Pressable onPress={handlePress} disabled={disabled}>
       {renderContent}
     </Pressable>
   );
