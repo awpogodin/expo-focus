@@ -260,6 +260,9 @@ const EntryModal = () => {
       </View>
       <DatePicker
         modal
+        title={null}
+        confirmText={t('buttons.confirm')}
+        cancelText={t('buttons.cancel')}
         open={open}
         date={new Date()}
         mode="date"

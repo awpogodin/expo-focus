@@ -2,6 +2,7 @@ export const resources = {
   ru: {
     translation: {
       entries: {
+        screenTitle: 'Задачи',
         noEntries: {
           title: 'У Вас нет задач',
           description: 'Тут будут отображаться Ваши задачи',
@@ -21,6 +22,7 @@ export const resources = {
           setDueDate: 'Установить срок',
           edit: 'Редактировать',
           remove: 'Удалить',
+          schedule: 'Запланировать',
         },
       },
       home: {
@@ -87,6 +89,7 @@ export const resources = {
   en: {
     translation: {
       entries: {
+        screenTitle: 'Tasks',
         noEntries: {
           title: 'No tasks',
           description: 'Tasks will be displayed here',
@@ -106,6 +109,7 @@ export const resources = {
           setDueDate: 'Set due date',
           edit: 'Edit',
           remove: 'Remove',
+          schedule: 'Schedule',
         },
       },
       home: {

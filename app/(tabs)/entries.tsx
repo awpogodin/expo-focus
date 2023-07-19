@@ -100,7 +100,7 @@ const EntriesScreen = () => {
   }: {
     section: SectionListData<Task, Section>;
   }) => (
-    <View row justifyContent="space-between" mh="l" pt="xl" color="background">
+    <View row justifyContent="space-between" ph="l" pv="l" color="background">
       <Text text={title} type="bodyMedium" color={isInbox ? 'primary' : 'secondary'} />
       <Text text={total.toString()} type="bodyMedium" color={isInbox ? 'primary' : 'secondary'} />
     </View>

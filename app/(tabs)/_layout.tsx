@@ -40,7 +40,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="entries"
         options={{
-          title: '',
+          title: t('entries.screenTitle'),
           tabBarIcon: ({ color }) => <TabBarIcon name="inbox" color={color} />,
           headerRight: () => (
             <Pressable onPress={handleAddEntry}>
@@ -60,6 +60,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: '',
+          headerTransparent: true,
           tabBarIcon: ({ color }) => <TabBarIcon name="circle-o-notch" color={color} />,
         }}
       />

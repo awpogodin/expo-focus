@@ -178,11 +178,11 @@ const HomeScreen = () => {
   };
 
   return (
-    <View ph="l" color="background" flex={1}>
+    <View useSafeArea ph="l" color="background" flex={1}>
       {!!scheduledTask && (
         <ContextMenuView menuConfig={currentTaskMenuConfig} onPressMenuItem={handleTaskMenuAction}>
           <Pressable>
-            <View mt="xl">
+            <View pv="l">
               <Text align="center" type="labelLarge" text={scheduledTask.name} />
               {!!category && (
                 <Text
