@@ -1,5 +1,6 @@
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { differenceInDays } from 'date-fns';
+import { useRouter } from 'expo-router';
 import { observer } from 'mobx-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,7 @@ type Props = {
 
 export const EntryItem: React.FC<Props> = observer(({ data }) => {
   const { t } = useTranslation();
+  const router = useRouter();
   const { colors } = useTheme();
   const { removeTask, setCurrentTaskId, currentTaskId, getCategoryById } = tasksStore;
   const { id, name, categoryId, dueDate } = data;
@@ -104,6 +106,9 @@ export const EntryItem: React.FC<Props> = observer(({ data }) => {
           }
         }
       );
+    }
+    if (actionKey === 'edit') {
+      router.push({ pathname: '/entry', params: { id } });
     }
   };
 

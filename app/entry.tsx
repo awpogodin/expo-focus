@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns';
-import { useNavigation, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { upperFirst } from 'lodash';
 import { observer } from 'mobx-react';
@@ -12,21 +12,38 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { Text } from '../core/components/Text';
 import { View } from '../core/components/View';
 import { formatDate } from '../core/helpers/dates';
-import tasksStore from '../core/models/tasksStore';
+import tasksStore, { Task } from '../core/models/tasksStore';
 import { useTheme } from '../core/providers/ThemeProvider';
 
 const EntryModal = () => {
-  const { addTask, categories, addCategory, getCategoryById } = tasksStore;
+  const { addTask, updateTask, categories, addCategory, getCategoryById, getTaskById } = tasksStore;
 
   const { t } = useTranslation();
   const { typography, colors } = useTheme();
   const router = useRouter();
   const navigation = useNavigation();
+  const params = useLocalSearchParams();
+
+  console.log('params = ', params);
+
+  useEffect(() => {
+    if (params?.id) {
+      const currentTask = getTaskById(params.id as string);
+      if (!currentTask) {
+        return;
+      }
+      setEditingTask(currentTask);
+      setName(currentTask?.name);
+      setCategoryId(currentTask?.categoryId);
+      setDueDate(currentTask?.dueDate);
+    }
+  }, [params]);
 
   const [name, setName] = useState<string | undefined>();
   const [categoryId, setCategoryId] = useState<string | undefined>();
   const [dueDate, setDueDate] = useState<string | undefined>();
   const [open, setOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const category = useMemo(
     () => (categoryId ? getCategoryById(categoryId) : null),
@@ -41,7 +58,11 @@ const EntryModal = () => {
     if (!name) {
       return;
     }
-    addTask({ name, categoryId, dueDate });
+    if (editingTask) {
+      updateTask(editingTask.id, { name, categoryId, dueDate });
+    } else {
+      addTask({ name, categoryId, dueDate });
+    }
     router.push('../');
   };
 
@@ -130,7 +151,7 @@ const EntryModal = () => {
         icon: {
           type: 'IMAGE_SYSTEM',
           imageValue: {
-            systemName: 'trash',
+            systemName: 'clear',
           },
         },
       },
@@ -183,7 +204,7 @@ const EntryModal = () => {
         icon: {
           type: 'IMAGE_SYSTEM',
           imageValue: {
-            systemName: 'trash',
+            systemName: 'clear',
           },
         },
       },
