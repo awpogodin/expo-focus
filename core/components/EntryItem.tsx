@@ -10,6 +10,7 @@ import { ContextMenuView } from 'react-native-ios-context-menu';
 
 import { Text } from './Text';
 import { View } from './View';
+import { defaultPreviewConfig } from '../helpers/contextMenu';
 import { formatDate, parseDate } from '../helpers/dates';
 import tasksStore, { Task } from '../models/tasksStore';
 import { useTheme } from '../providers/ThemeProvider';
@@ -184,6 +185,9 @@ export const EntryItem: React.FC<Props> = observer(({ data }) => {
   };
 
   const handleScheduleTask = () => {
+    const goToHome = () => {
+      router.replace('/');
+    };
     if (currentTaskId) {
       ActionSheetIOS.showActionSheetWithOptions(
         {
@@ -195,17 +199,22 @@ export const EntryItem: React.FC<Props> = observer(({ data }) => {
         (buttonIndex) => {
           if (buttonIndex === 1) {
             setCurrentTaskId(id);
+            goToHome();
           }
         }
       );
       return;
     }
     setCurrentTaskId(id);
+    goToHome();
   };
 
   return (
     <>
-      <ContextMenuView menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+      <ContextMenuView
+        previewConfig={defaultPreviewConfig}
+        menuConfig={menuConfig}
+        onPressMenuItem={handlePressMenuItem}>
         <View row alignItems="center" ph="l" pv="s">
           <View flex={1}>
             <Text text={name} type="labelLarge" />

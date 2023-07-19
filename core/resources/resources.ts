@@ -29,7 +29,7 @@ export const resources = {
         title: 'Focus',
 
         actionsMenu: {
-          moveToInbox: 'Вернуть во входящие',
+          moveToInbox: 'Отложить во входящие',
           done: 'Выполнено',
           remove: 'Удалить',
         },
@@ -42,6 +42,7 @@ export const resources = {
       },
       entry: {
         screenTitle: 'Новая задача',
+        screenTitleEditing: 'Задача',
         name: 'Название',
         category: 'Категория',
         dueDate: 'Срок',
@@ -116,7 +117,7 @@ export const resources = {
         title: 'Focus',
 
         actionsMenu: {
-          moveToInbox: 'Return to inbox',
+          moveToInbox: 'Move to inbox',
           done: 'Done',
           remove: 'Remove',
         },
@@ -129,6 +130,7 @@ export const resources = {
       },
       entry: {
         screenTitle: 'New task',
+        screenTitleEditing: 'Task',
         name: 'Name',
         category: 'Category',
         dueDate: 'Due date',

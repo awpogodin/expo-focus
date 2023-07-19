@@ -20,6 +20,7 @@ import { withPause } from 'react-native-redash';
 import { ProgressCircle } from '../../core/components/ProgressCircle';
 import { Text } from '../../core/components/Text';
 import { View } from '../../core/components/View';
+import { defaultPreviewConfig } from '../../core/helpers/contextMenu';
 import tasksStore from '../../core/models/tasksStore';
 import { useTheme } from '../../core/providers/ThemeProvider';
 
@@ -142,7 +143,7 @@ const HomeScreen = () => {
         </Pressable>
       ),
     });
-  }, []);
+  }, [colors]);
 
   const currentTaskMenuConfig: React.ComponentProps<typeof ContextMenuView>['menuConfig'] = {
     menuTitle: '',
@@ -180,9 +181,12 @@ const HomeScreen = () => {
   return (
     <View useSafeArea ph="l" color="background" flex={1}>
       {!!scheduledTask && (
-        <ContextMenuView menuConfig={currentTaskMenuConfig} onPressMenuItem={handleTaskMenuAction}>
-          <Pressable>
-            <View pv="l">
+        <View alignSelf="center">
+          <ContextMenuView
+            previewConfig={defaultPreviewConfig}
+            menuConfig={currentTaskMenuConfig}
+            onPressMenuItem={handleTaskMenuAction}>
+            <View ph="xl" pv="s">
               <Text align="center" type="labelLarge" text={scheduledTask.name} />
               {!!category && (
                 <Text
@@ -194,8 +198,8 @@ const HomeScreen = () => {
                 />
               )}
             </View>
-          </Pressable>
-        </ContextMenuView>
+          </ContextMenuView>
+        </View>
       )}
       <View flex={1} justifyContent="center">
         <Text align="center" type="bodyLarge" color="secondary" text={t('home.title')} />

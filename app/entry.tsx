@@ -32,6 +32,9 @@ const EntryModal = () => {
       if (!currentTask) {
         return;
       }
+      navigation.setOptions({
+        headerTitle: t('entry.screenTitleEditing'),
+      });
       setEditingTask(currentTask);
       setName(currentTask?.name);
       setCategoryId(currentTask?.categoryId);
@@ -216,6 +219,7 @@ const EntryModal = () => {
       <View flex={1} ph="l" color="background" justifyContent="space-between">
         <View mt="xl">
           <TextInput
+            maxLength={15}
             value={name}
             onChangeText={handleChangeName}
             placeholder={t('entry.name')}

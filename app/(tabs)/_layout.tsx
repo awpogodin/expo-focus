@@ -32,7 +32,6 @@ export default function TabLayout() {
         tabBarInactiveTintColor: colors.tabIconDefault,
         tabBarShowLabel: false,
         headerShadowVisible: false,
-        // headerTransparent: true,
         tabBarStyle: {
           borderTopWidth: 0,
         },
