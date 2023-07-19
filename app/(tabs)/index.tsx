@@ -36,7 +36,7 @@ const getFormattedValue = (value: number) => {
 };
 
 const HomeScreen = () => {
-  const { getTaskById, currentTaskId, setCurrentTaskId, doneTask } = tasksStore;
+  const { getTaskById, currentTaskId, setCurrentTaskId, doneTask, getCategoryById } = tasksStore;
 
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -48,6 +48,11 @@ const HomeScreen = () => {
     }
     return null;
   }, [currentTaskId, getTaskById]);
+
+  const category = useMemo(
+    () => (scheduledTask?.categoryId ? getCategoryById(scheduledTask.categoryId) : null),
+    [scheduledTask, getCategoryById]
+  );
 
   const handleTaskMenuAction: React.ComponentProps<typeof ContextMenuView>['onPressMenuItem'] = ({
     nativeEvent: { actionKey },
@@ -179,8 +184,14 @@ const HomeScreen = () => {
           <Pressable>
             <View mt="xl">
               <Text align="center" type="labelLarge" text={scheduledTask.name} />
-              {!!scheduledTask.category && (
-                <Text align="center" type="bodySmall" color="secondary" mt="xs" text="Работа" />
+              {!!category && (
+                <Text
+                  align="center"
+                  type="bodySmall"
+                  color="secondary"
+                  mt="xs"
+                  text={category.name}
+                />
               )}
             </View>
           </Pressable>

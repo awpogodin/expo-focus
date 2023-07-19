@@ -1,6 +1,7 @@
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { differenceInDays } from 'date-fns';
 import { observer } from 'mobx-react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActionSheetIOS, Pressable } from 'react-native';
 import { ContextMenuView } from 'react-native-ios-context-menu';
@@ -18,8 +19,14 @@ type Props = {
 export const EntryItem: React.FC<Props> = observer(({ data }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const { removeTask, setCurrentTaskId, currentTaskId } = tasksStore;
-  const { id, name, category, dueDate } = data;
+  const { removeTask, setCurrentTaskId, currentTaskId, getCategoryById } = tasksStore;
+  const { id, name, categoryId, dueDate } = data;
+
+  const category = useMemo(
+    () => (categoryId ? getCategoryById(categoryId) : null),
+    [categoryId, getCategoryById]
+  );
+
   const isOverdued =
     dueDate && differenceInDays(parseDate(dueDate), parseDate(formatDate(new Date()))) < 1;
 
@@ -126,7 +133,7 @@ export const EntryItem: React.FC<Props> = observer(({ data }) => {
         <View flex={1}>
           <Text text={name} type="labelLarge" />
           <View row>
-            {!!category && <Text text={category} type="bodySmall" color="secondary" />}
+            {!!category && <Text text={category.name} type="bodySmall" color="secondary" />}
             {!!dueDate && (
               <>
                 {!!category && <Text mh="xs" text="|" type="bodySmall" color="secondary" />}

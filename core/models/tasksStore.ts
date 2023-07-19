@@ -8,7 +8,7 @@ import { parseDate } from '../helpers/dates';
 export type Task = {
   id: string;
   name: string;
-  category?: string;
+  categoryId?: string;
   dueDate?: string;
   createdAt: number;
   updatedAt?: number;
@@ -16,9 +16,17 @@ export type Task = {
   isDone?: boolean;
 };
 
+export type Category = {
+  id: string;
+  name: string;
+  createdAt: number;
+  updatedAt?: number;
+  isDeleted?: boolean;
+};
+
 class TasksStore {
   tasks: Task[] = [];
-  categories: string[] = ['Работа'];
+  categories: Category[] = [];
 
   currentTaskId: string | null = null;
 
@@ -48,9 +56,20 @@ class TasksStore {
   getTasksAll = () => this.tasks;
 
   getCategoriesAll = () => this.categories;
+  getCategoryById = (id: string) => {
+    return this.categories.find((category) => category.id === id);
+  };
 
-  addTask = (data: Omit<Task, 'id' | 'createdAt'>) => {
-    this.tasks = [...this.tasks, { id: nanoid(), createdAt: new Date().getTime(), ...data }];
+  addCategory = (name: string): Category => {
+    const createdCategory = { id: nanoid(), name, createdAt: new Date().getTime() };
+    this.categories = [...this.categories, createdCategory];
+    return createdCategory;
+  };
+
+  addTask = (data: Omit<Task, 'id' | 'createdAt'>): Task => {
+    const createdTask = { id: nanoid(), createdAt: new Date().getTime(), ...data };
+    this.tasks = [...this.tasks, createdTask];
+    return createdTask;
   };
 
   getTaskById = (id: string) => {

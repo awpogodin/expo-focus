@@ -2,7 +2,8 @@ import { addDays } from 'date-fns';
 import { useNavigation, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { upperFirst } from 'lodash';
-import { useEffect, useState } from 'react';
+import { observer } from 'mobx-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, Pressable, StyleSheet, TextInput } from 'react-native';
 import DatePicker from 'react-native-date-picker';
@@ -14,8 +15,8 @@ import { formatDate } from '../core/helpers/dates';
 import tasksStore from '../core/models/tasksStore';
 import { useTheme } from '../core/providers/ThemeProvider';
 
-export default function EntryModal() {
-  const { addTask, categories } = tasksStore;
+const EntryModal = () => {
+  const { addTask, categories, addCategory, getCategoryById } = tasksStore;
 
   const { t } = useTranslation();
   const { typography, colors } = useTheme();
@@ -23,18 +24,24 @@ export default function EntryModal() {
   const navigation = useNavigation();
 
   const [name, setName] = useState<string | undefined>();
-  const [category, setCategory] = useState<string | undefined>();
+  const [categoryId, setCategoryId] = useState<string | undefined>();
   const [dueDate, setDueDate] = useState<string | undefined>();
   const [open, setOpen] = useState(false);
 
+  const category = useMemo(
+    () => (categoryId ? getCategoryById(categoryId) : null),
+    [categoryId, getCategoryById]
+  );
+
   console.log('name = ', name);
+  console.log('category = ', category);
   console.log('dueDate = ', dueDate);
 
   const handleSubmit = () => {
     if (!name) {
       return;
     }
-    addTask({ name, category, dueDate });
+    addTask({ name, categoryId, dueDate });
     router.push('../');
   };
 
@@ -70,13 +77,19 @@ export default function EntryModal() {
         t('entry.categoryPromptSubtitle'),
         (v) => {
           const categoryName = upperFirst(v.substring(0, 12));
-          console.log('new category = ', categoryName);
+          const createdCategory = addCategory(categoryName);
+          console.log('createdCategory = ', createdCategory);
+          setCategoryId(createdCategory.id);
         },
         'plain-text'
       );
       return;
     }
-    setCategory(selectedActionId);
+    if (selectedActionId === 'category-clear') {
+      setCategoryId(undefined);
+      return;
+    }
+    setCategoryId(selectedActionId);
   };
 
   const handleDateMenuAction: React.ComponentProps<typeof ContextMenuButton>['onPressMenuItem'] = ({
@@ -111,13 +124,24 @@ export default function EntryModal() {
         },
       },
       {
+        actionKey: 'category-clear',
+        actionTitle: t('entry.actionsMenu.clear'),
+        menuAttributes: ['destructive'],
+        icon: {
+          type: 'IMAGE_SYSTEM',
+          imageValue: {
+            systemName: 'trash',
+          },
+        },
+      },
+      {
         type: 'menu',
         menuTitle: '',
         menuOptions: ['displayInline'],
         menuItems: [
-          ...categories.map((categoryName) => ({
-            actionKey: categoryName,
-            actionTitle: categoryName,
+          ...categories.map((c) => ({
+            actionKey: c.id,
+            actionTitle: c.name,
           })),
         ],
       },
@@ -175,10 +199,7 @@ export default function EntryModal() {
             onChangeText={handleChangeName}
             placeholder={t('entry.name')}
             placeholderTextColor={colors.secondary}
-            style={StyleSheet.flatten([
-              styles.nameInput,
-              { ...typography['bodyLarge'], color: colors.primary },
-            ])}
+            style={StyleSheet.flatten([{ ...typography['bodyLarge'], color: colors.primary }])}
             autoFocus
             onSubmitEditing={handleSubmit}
           />
@@ -190,7 +211,7 @@ export default function EntryModal() {
               {({ pressed }) => (
                 <View mt="l" style={{ opacity: pressed ? 0.5 : 1 }}>
                   {category ? (
-                    <Text text={category} type="bodyLarge" />
+                    <Text text={category.name} type="bodyLarge" />
                   ) : (
                     <Text text={t('entry.category')} color="secondary" type="bodyLarge" />
                   )}
@@ -232,14 +253,6 @@ export default function EntryModal() {
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 50,
-  },
-  nameInput: {
-    // height: 40,
-    // paddingVertical: 10,
-  },
-});
+export default observer(EntryModal);
