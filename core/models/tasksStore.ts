@@ -39,7 +39,7 @@ class TasksStore {
     });
   }
 
-  get sortedTasks() {
+  get sortedTasks(): Task[] {
     return this.tasks
       .slice()
       .sort((a, b) => {

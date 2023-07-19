@@ -33,6 +33,11 @@ export const resources = {
           done: 'Выполнено',
           remove: 'Удалить',
         },
+
+        controlContextMenu: {
+          reset: 'Стоп',
+          next: 'Пропустить',
+        },
       },
       buttons: {
         save: 'Сохранить',
@@ -84,6 +89,11 @@ export const resources = {
           dark: 'Темная',
           auto: 'Системная',
         },
+        timerTitle: {
+          focus: 'Focus',
+          shortBreak: 'Сделайте небольшой перерыв ☕️',
+          longBreak: 'Сделайте перерыв ☕️',
+        },
       },
     },
   },
@@ -120,6 +130,11 @@ export const resources = {
           moveToInbox: 'Move to inbox',
           done: 'Done',
           remove: 'Remove',
+        },
+
+        controlContextMenu: {
+          reset: 'Stop',
+          next: 'Skip',
         },
       },
       buttons: {
@@ -171,6 +186,11 @@ export const resources = {
           light: 'Light',
           dark: 'Dark',
           auto: 'Auto',
+        },
+        timerTitle: {
+          focus: 'Focus',
+          shortBreak: 'Take a short break ☕️',
+          longBreak: 'Take a break ☕️',
         },
       },
     },

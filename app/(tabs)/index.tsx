@@ -1,12 +1,11 @@
 import { AntDesign } from '@expo/vector-icons';
-import { intervalToDuration } from 'date-fns';
 import { useNavigation } from 'expo-router';
 import { observer } from 'mobx-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActionSheetIOS, Pressable } from 'react-native';
-import { ContextMenuView } from 'react-native-ios-context-menu';
-import Animated, {
+import { Pressable, StyleSheet } from 'react-native';
+import { ContextMenuView, ContextMenuButton } from 'react-native-ios-context-menu';
+import {
   cancelAnimation,
   useSharedValue,
   withRepeat,
@@ -15,32 +14,31 @@ import Animated, {
   runOnJS,
   useDerivedValue,
 } from 'react-native-reanimated';
-import { withPause } from 'react-native-redash';
+import { ReText, withPause } from 'react-native-redash';
 
 import { ProgressCircle } from '../../core/components/ProgressCircle';
 import { Text } from '../../core/components/Text';
 import { View } from '../../core/components/View';
 import { defaultPreviewConfig } from '../../core/helpers/contextMenu';
+import { getMsFromMinutes } from '../../core/helpers/timer';
 import tasksStore from '../../core/models/tasksStore';
 import { useTheme } from '../../core/providers/ThemeProvider';
-
-const AnimatedText = Animated.createAnimatedComponent(Text);
-
-const formatNumber = (value: number) => ('0' + value).slice(-2);
-
-const getFormattedValue = (value: number) => {
-  const { minutes, seconds } = intervalToDuration({
-    start: 0,
-    end: Math.ceil(value / 1000) * 1000,
-  });
-  return `${formatNumber(minutes ?? 0)}:${formatNumber(seconds ?? 0)}`;
-};
+import rootStore from '../../core/rootStore';
 
 const HomeScreen = () => {
   const { getTaskById, currentTaskId, setCurrentTaskId, doneTask, getCategoryById } = tasksStore;
+  const {
+    timerDuration,
+    nextTimerItem,
+    resetTimerIndex,
+    currentTimerItem,
+    timerItems,
+    currentTimerIndex,
+    focusLoops,
+  } = rootStore;
 
   const { t } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, typography } = useTheme();
   const navigation = useNavigation();
 
   const scheduledTask = useMemo(() => {
@@ -67,11 +65,31 @@ const HomeScreen = () => {
     }
   };
 
+  const handleControlMenuAction: React.ComponentProps<
+    typeof ContextMenuButton
+  >['onPressMenuItem'] = ({ nativeEvent: { actionKey } }) => {
+    if (actionKey === 'control-next') {
+      controls.next();
+    }
+    if (actionKey === 'control-reset') {
+      controls.reset();
+    }
+  };
+
   // region timer
 
+  useEffect(() => {
+    setInitialTimer(getMsFromMinutes(timerDuration));
+    controls.reset();
+  }, [timerDuration]);
+
+  useEffect(() => {
+    resetTimerIndex();
+    controls.reset();
+  }, [currentTaskId, focusLoops]);
+
   // начальное значение таймера в мс
-  const [initialTimer, setInitialTimer] = useState(10000);
-  const [elapsedTime, setElapsedTime] = useState(initialTimer);
+  const [initialTimer, setInitialTimer] = useState(getMsFromMinutes(timerDuration));
 
   // запущен ли таймер
   const [isPlay, setIsPlay] = useState(false);
@@ -95,17 +113,27 @@ const HomeScreen = () => {
       cancelAnimation(animElapsedTime);
       animElapsedTime.value = initialTimer;
     },
+    next: () => {
+      setIsPlay(false);
+      setIsStarted(false);
+      cancelAnimation(animElapsedTime);
+      animElapsedTime.value = initialTimer;
+      nextTimerItem();
+    },
   };
 
-  const updateElapsedTime = (val: number) => {
-    setElapsedTime(val);
-    if (val === 0) {
-      controls.reset();
+  const elapsedTime = useDerivedValue(() => {
+    // Останавливаем таймер, если время вышло
+    if (animElapsedTime.value === 0) {
+      runOnJS(controls.next)();
     }
-  };
-
-  useDerivedValue(() => {
-    runOnJS(updateElapsedTime)(animElapsedTime.value);
+    const getTime = (ms: number) => {
+      const min = Math.floor((ms / 1000 / 60) << 0).toString();
+      const sec = Math.floor((ms / 1000) % 60).toString();
+      return { min: min.length === 1 ? `0${min}` : min, sec: sec.length === 1 ? `0${sec}` : sec };
+    };
+    const { min, sec } = getTime(animElapsedTime.value);
+    return `${min}:${sec}`;
   });
 
   const startAnimation = () => {
@@ -120,13 +148,6 @@ const HomeScreen = () => {
       animPaused
     );
   };
-
-  // if (elapsedTime === 0) {
-  //   setTimeout(() => {
-  //     controls.reset();
-  //   });
-  // }
-  // endregion
 
   useEffect(() => {
     navigation.setOptions({
@@ -143,7 +164,41 @@ const HomeScreen = () => {
         </Pressable>
       ),
     });
-  }, [colors]);
+  }, [colors, controls]);
+
+  const controlContextMenuConfig: React.ComponentProps<typeof ContextMenuButton>['menuConfig'] = {
+    menuTitle: '',
+    menuItems: [
+      {
+        type: 'menu',
+        menuTitle: '',
+        menuOptions: ['displayInline'],
+        menuItems: [
+          {
+            actionKey: 'control-next',
+            actionTitle: t('home.controlContextMenu.next'),
+            menuAttributes: currentTimerItem === 'focus' ? ['disabled'] : [],
+            icon: {
+              type: 'IMAGE_SYSTEM',
+              imageValue: {
+                systemName: 'forward',
+              },
+            },
+          },
+          {
+            actionKey: 'control-reset',
+            actionTitle: t('home.controlContextMenu.reset'),
+            icon: {
+              type: 'IMAGE_SYSTEM',
+              imageValue: {
+                systemName: 'arrow.counterclockwise',
+              },
+            },
+          },
+        ],
+      },
+    ],
+  };
 
   const currentTaskMenuConfig: React.ComponentProps<typeof ContextMenuView>['menuConfig'] = {
     menuTitle: '',
@@ -202,44 +257,64 @@ const HomeScreen = () => {
         </View>
       )}
       <View flex={1} justifyContent="center">
-        <Text align="center" type="bodyLarge" color="secondary" text={t('home.title')} />
-        <AnimatedText
+        <Text
           align="center"
-          type="headlineExtraLarge"
-          mt="l"
-          text={getFormattedValue(elapsedTime)}
+          type="bodyLarge"
+          color="secondary"
+          mb="l"
+          text={t(`common.timerTitle.${currentTimerItem}`)}
+        />
+        <ReText
+          style={StyleSheet.flatten([
+            typography.headlineExtraLarge,
+            { textAlign: 'center', color: colors.primary },
+          ])}
+          text={elapsedTime}
         />
         <View row justifyContent="center" mt="s">
-          <ProgressCircle type="finished" />
-          <ProgressCircle type="inProgress" />
-          <ProgressCircle type="idle" />
-          <ProgressCircle type="idle" />
+          {timerItems.map((type, index) => {
+            if (type !== 'focus') {
+              return null;
+            }
+            let circleType: React.ComponentProps<typeof ProgressCircle>['type'] = 'idle';
+            if (index === currentTimerIndex && isStarted) {
+              circleType = 'inProgress';
+            }
+            if (index < currentTimerIndex) {
+              circleType = 'finished';
+            }
+            return <ProgressCircle key={index} type={circleType} />;
+          })}
         </View>
 
         <View mt="xxl" justifyContent="center" row>
-          {isPlay ? (
-            <Pressable onPress={() => controls.play(false)}>
-              {({ pressed }) => (
-                <AntDesign
-                  name="pause"
-                  size={60}
-                  color={colors.primary}
-                  style={{ opacity: pressed ? 0.5 : 1 }}
-                />
-              )}
-            </Pressable>
-          ) : (
-            <Pressable onPress={() => controls.play(true)}>
-              {({ pressed }) => (
-                <AntDesign
-                  name="play"
-                  size={60}
-                  color={colors.primary}
-                  style={{ opacity: pressed ? 0.5 : 1 }}
-                />
-              )}
-            </Pressable>
-          )}
+          <ContextMenuButton
+            menuConfig={controlContextMenuConfig}
+            onPressMenuItem={handleControlMenuAction}>
+            {isPlay ? (
+              <Pressable onPress={() => controls.play(false)}>
+                {({ pressed }) => (
+                  <AntDesign
+                    name="pause"
+                    size={60}
+                    color={colors.primary}
+                    style={{ opacity: pressed ? 0.5 : 1 }}
+                  />
+                )}
+              </Pressable>
+            ) : (
+              <Pressable onPress={() => controls.play(true)}>
+                {({ pressed }) => (
+                  <AntDesign
+                    name="play"
+                    size={60}
+                    color={colors.primary}
+                    style={{ opacity: pressed ? 0.5 : 1 }}
+                  />
+                )}
+              </Pressable>
+            )}
+          </ContextMenuButton>
         </View>
       </View>
     </View>
