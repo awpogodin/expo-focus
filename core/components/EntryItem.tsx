@@ -1,23 +1,27 @@
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
-import { format } from 'date-fns';
+import { differenceInDays } from 'date-fns';
+import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { Pressable } from 'react-native';
+import { ActionSheetIOS, Pressable } from 'react-native';
 import { ContextMenuView } from 'react-native-ios-context-menu';
 
 import { Text } from './Text';
 import { View } from './View';
+import { formatDate, parseDate } from '../helpers/dates';
+import tasksStore, { Task } from '../models/tasksStore';
 import { useTheme } from '../providers/ThemeProvider';
-import { Entry } from '../types/entry';
 
 type Props = {
-  data: Entry;
+  data: Task;
 };
 
-export const EntryItem: React.FC<Props> = ({ data }) => {
+export const EntryItem: React.FC<Props> = observer(({ data }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const { name, category, dueDate } = data;
-  const isOverdued = name === 'Задача 1';
+  const { removeTask, setCurrentTaskId, currentTaskId } = tasksStore;
+  const { id, name, category, dueDate } = data;
+  const isOverdued =
+    dueDate && differenceInDays(parseDate(dueDate), parseDate(formatDate(new Date()))) < 1;
 
   const menuConfig: React.ComponentProps<typeof ContextMenuView>['menuConfig'] = {
     menuTitle: '',
@@ -46,11 +50,20 @@ export const EntryItem: React.FC<Props> = ({ data }) => {
               type: 'IMAGE_SYSTEM',
               imageValue: {
                 systemName: 'calendar',
-                scale: 'small',
               },
             },
           },
         ],
+      },
+      {
+        actionKey: 'edit',
+        actionTitle: t('entries.actionsMenu.edit'),
+        icon: {
+          type: 'IMAGE_SYSTEM',
+          imageValue: {
+            systemName: 'pencil',
+          },
+        },
       },
       {
         actionKey: 'remove',
@@ -60,15 +73,55 @@ export const EntryItem: React.FC<Props> = ({ data }) => {
           type: 'IMAGE_SYSTEM',
           imageValue: {
             systemName: 'trash',
-            scale: 'small',
           },
         },
       },
     ],
   };
 
+  const handlePressMenuItem: React.ComponentProps<typeof ContextMenuView>['onPressMenuItem'] = ({
+    nativeEvent,
+  }) => {
+    const actionKey = nativeEvent.actionKey;
+    if (actionKey === 'remove') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          title: t('entry.removingConfirmation'),
+          options: [t('buttons.cancel'), t('buttons.confirm')],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            removeTask(id);
+          }
+        }
+      );
+    }
+  };
+
+  const handleScheduleTask = () => {
+    if (currentTaskId) {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          title: t('entry.scheduledTaskExist'),
+          options: [t('buttons.cancel'), t('buttons.confirm')],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            setCurrentTaskId(id);
+          }
+        }
+      );
+      return;
+    }
+    setCurrentTaskId(id);
+  };
+
   return (
-    <ContextMenuView menuConfig={menuConfig}>
+    <ContextMenuView menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
       <View row alignItems="center" mh="l" mt="l">
         <View flex={1}>
           <Text text={name} type="labelLarge" />
@@ -83,7 +136,7 @@ export const EntryItem: React.FC<Props> = ({ data }) => {
                   color={isOverdued ? colors.danger : colors.secondary}
                 />
                 <Text
-                  text={format(dueDate, 'd.MM.yyyy')}
+                  text={dueDate}
                   type="bodySmall"
                   color={isOverdued ? 'danger' : 'secondary'}
                   ml="xs"
@@ -92,7 +145,7 @@ export const EntryItem: React.FC<Props> = ({ data }) => {
             )}
           </View>
         </View>
-        <Pressable onPress={() => {}}>
+        <Pressable onPress={handleScheduleTask}>
           {({ pressed }) => (
             <AntDesign
               name="play"
@@ -105,4 +158,4 @@ export const EntryItem: React.FC<Props> = ({ data }) => {
       </View>
     </ContextMenuView>
   );
-};
+});

@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { getLocales } from 'expo-localization';

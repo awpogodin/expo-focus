@@ -4,6 +4,7 @@ import {
   ThemeProvider as DefaultThemeProvider,
   useTheme as useDefaultTheme,
 } from '@react-navigation/native';
+import { observer } from 'mobx-react';
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
 
@@ -11,6 +12,7 @@ import { colors } from '../constants/colors';
 import { Radii } from '../constants/radii';
 import { Spacings } from '../constants/spacings';
 import { Typography } from '../constants/typography';
+import rootStore from '../rootStore';
 
 export type Theme = {
   dark: boolean;
@@ -95,19 +97,24 @@ interface Props {
 const ThemeProvider: FC<Props> = ({ children }) => {
   const isDarkMode = useColorScheme() === ColorSchemas.Dark;
   const [currentThemeName, setCurrentThemeName] = useState(ThemeNames.Light);
+  const { userTheme } = rootStore;
 
   useEffect(() => {
+    if (userTheme === 'light') {
+      setCurrentThemeName(ThemeNames.Light);
+      return;
+    }
+    if (userTheme === 'dark') {
+      setCurrentThemeName(ThemeNames.Dark);
+      return;
+    }
     setCurrentThemeName(isDarkMode ? ThemeNames.Dark : ThemeNames.Light);
-  }, [isDarkMode]);
+  }, [isDarkMode, userTheme]);
 
-  return (
-    <DefaultThemeProvider value={themes[currentThemeName]}>
-      {children}
-    </DefaultThemeProvider>
-  );
+  return <DefaultThemeProvider value={themes[currentThemeName]}>{children}</DefaultThemeProvider>;
 };
 
-export default ThemeProvider;
+export default observer(ThemeProvider);
 
 export const useTheme = () => {
   const theme = useDefaultTheme();

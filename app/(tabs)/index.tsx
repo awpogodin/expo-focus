@@ -1,9 +1,10 @@
 import { AntDesign } from '@expo/vector-icons';
 import { intervalToDuration } from 'date-fns';
 import { useNavigation } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { observer } from 'mobx-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable } from 'react-native';
+import { ActionSheetIOS, Pressable } from 'react-native';
 import { ContextMenuView } from 'react-native-ios-context-menu';
 import Animated, {
   cancelAnimation,
@@ -19,6 +20,7 @@ import { withPause } from 'react-native-redash';
 import { ProgressCircle } from '../../core/components/ProgressCircle';
 import { Text } from '../../core/components/Text';
 import { View } from '../../core/components/View';
+import tasksStore from '../../core/models/tasksStore';
 import { useTheme } from '../../core/providers/ThemeProvider';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
@@ -33,32 +35,30 @@ const getFormattedValue = (value: number) => {
   return `${formatNumber(minutes ?? 0)}:${formatNumber(seconds ?? 0)}`;
 };
 
-export default function HomeScreen() {
+const HomeScreen = () => {
+  const { getTaskById, currentTaskId, setCurrentTaskId, doneTask } = tasksStore;
+
   const { t } = useTranslation();
   const { colors } = useTheme();
   const navigation = useNavigation();
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Pressable onPress={controls.reset}>
-          {({ pressed }) => (
-            <AntDesign
-              name="reload1"
-              size={25}
-              color={colors.primary}
-              style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-            />
-          )}
-        </Pressable>
-      ),
-    });
-  }, []);
+  const scheduledTask = useMemo(() => {
+    if (currentTaskId) {
+      return getTaskById(currentTaskId) ?? null;
+    }
+    return null;
+  }, [currentTaskId, getTaskById]);
 
   const handleTaskMenuAction: React.ComponentProps<typeof ContextMenuView>['onPressMenuItem'] = ({
-    nativeEvent,
+    nativeEvent: { actionKey },
   }) => {
-    console.log('selectedId = ', nativeEvent.actionKey);
+    if (actionKey === 'move-to-inbox') {
+      setCurrentTaskId();
+    }
+    if (actionKey === 'done' && currentTaskId) {
+      doneTask(currentTaskId);
+      setCurrentTaskId();
+    }
   };
 
   // region timer
@@ -122,7 +122,24 @@ export default function HomeScreen() {
   // }
   // endregion
 
-  const currentTaskMenuConfig: React.ComponentProps<typeof ContextMenuButton>['menuConfig'] = {
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable onPress={controls.reset}>
+          {({ pressed }) => (
+            <AntDesign
+              name="reload1"
+              size={25}
+              color={colors.primary}
+              style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+            />
+          )}
+        </Pressable>
+      ),
+    });
+  }, []);
+
+  const currentTaskMenuConfig: React.ComponentProps<typeof ContextMenuView>['menuConfig'] = {
     menuTitle: '',
     menuItems: [
       {
@@ -137,7 +154,6 @@ export default function HomeScreen() {
               type: 'IMAGE_SYSTEM',
               imageValue: {
                 systemName: 'tray.and.arrow.down.fill',
-                scale: 'small',
               },
             },
           },
@@ -148,37 +164,28 @@ export default function HomeScreen() {
               type: 'IMAGE_SYSTEM',
               imageValue: {
                 systemName: 'checkmark',
-                scale: 'small',
               },
             },
           },
         ],
-      },
-      {
-        actionKey: 'clear',
-        actionTitle: t('home.actionsMenu.remove'),
-        menuAttributes: ['destructive'],
-        icon: {
-          type: 'IMAGE_SYSTEM',
-          imageValue: {
-            systemName: 'trash',
-            scale: 'small',
-          },
-        },
       },
     ],
   };
 
   return (
     <View ph="l" color="background" flex={1}>
-      <ContextMenuView menuConfig={currentTaskMenuConfig} onPressMenuItem={handleTaskMenuAction}>
-        <Pressable>
-          <View mt="xl">
-            <Text align="center" type="labelLarge" text="Задача 1" />
-            <Text align="center" type="bodySmall" color="secondary" mt="xs" text="Работа" />
-          </View>
-        </Pressable>
-      </ContextMenuView>
+      {!!scheduledTask && (
+        <ContextMenuView menuConfig={currentTaskMenuConfig} onPressMenuItem={handleTaskMenuAction}>
+          <Pressable>
+            <View mt="xl">
+              <Text align="center" type="labelLarge" text={scheduledTask.name} />
+              {!!scheduledTask.category && (
+                <Text align="center" type="bodySmall" color="secondary" mt="xs" text="Работа" />
+              )}
+            </View>
+          </Pressable>
+        </ContextMenuView>
+      )}
       <View flex={1} justifyContent="center">
         <Text align="center" type="bodyLarge" color="secondary" text={t('home.title')} />
         <AnimatedText
@@ -222,4 +229,6 @@ export default function HomeScreen() {
       </View>
     </View>
   );
-}
+};
+
+export default observer(HomeScreen);

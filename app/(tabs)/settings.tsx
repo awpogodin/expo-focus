@@ -1,21 +1,56 @@
+import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
+import { useMMKV } from 'react-native-mmkv';
 
 import { MenuItem } from '../../core/components/MenuItem';
 import { View } from '../../core/components/View';
+import rootStore from '../../core/rootStore';
 
 type Item = React.ComponentProps<typeof MenuItem> & {
   id: number;
 };
 
-export default function SettingsScreen() {
+const SettingsScreen: React.FC = () => {
   const { t } = useTranslation();
+
+  const storage = useMMKV();
+
+  const {
+    userTheme,
+    setUserTheme,
+    focusDuration,
+    setFocusDuration,
+    shortBreakDuration,
+    longBreakDuration,
+    setShortBreakDuration,
+    setLongBreakDuration,
+    focusLoops,
+    setFocusLoops,
+  } = rootStore;
+  console.log('userTheme = ', userTheme);
+  console.log('storage = ', storage);
+
   const items: Item[] = [
     {
       id: 1,
-      title: 'Продолжительность focus',
-      description: 'Продолжительность времени фокусировки',
-      value: t('common.minutesShort', { value: 25 }),
+      title: t('settings.items.focusDuration.title'),
+      description: t('settings.items.focusDuration.description'),
+      value: t('common.minutesShort', { value: focusDuration }),
+      onPress: (id: string) => {
+        if (id === 'focus-duration-25') {
+          setFocusDuration(25);
+        }
+        if (id === 'focus-duration-30') {
+          setFocusDuration(30);
+        }
+        if (id === 'focus-duration-45') {
+          setFocusDuration(45);
+        }
+        if (id === 'focus-duration-60') {
+          setFocusDuration(60);
+        }
+      },
       menuConfig: {
         menuTitle: '',
         menuItems: [
@@ -25,12 +60,24 @@ export default function SettingsScreen() {
             menuOptions: ['displayInline'],
             menuItems: [
               {
-                actionKey: 'focus-duration-15',
-                actionTitle: t('common.minutesShort', { value: 15 }),
+                actionKey: 'focus-duration-25',
+                actionTitle: t('common.minutesShort', { value: 25 }),
+                menuState: focusDuration === 25 ? 'on' : undefined,
               },
               {
-                actionKey: 'focus-duration-20',
-                actionTitle: t('common.minutesShort', { value: 20 }),
+                actionKey: 'focus-duration-30',
+                actionTitle: t('common.minutesShort', { value: 30 }),
+                menuState: focusDuration === 30 ? 'on' : undefined,
+              },
+              {
+                actionKey: 'focus-duration-45',
+                actionTitle: t('common.minutesShort', { value: 45 }),
+                menuState: focusDuration === 45 ? 'on' : undefined,
+              },
+              {
+                actionKey: 'focus-duration-60',
+                actionTitle: t('common.minutesShort', { value: 60 }),
+                menuState: focusDuration === 60 ? 'on' : undefined,
               },
             ],
           },
@@ -42,7 +89,6 @@ export default function SettingsScreen() {
               type: 'IMAGE_SYSTEM',
               imageValue: {
                 systemName: 'lock.fill',
-                scale: 'small',
               },
             },
           },
@@ -51,9 +97,27 @@ export default function SettingsScreen() {
     },
     {
       id: 2,
-      title: 'Продолжительность перерыва',
-      description: 'Продолжительность короткого и длинного перерывов',
-      value: t('common.minutesShort', { value: '5, 20' }),
+      title: t('settings.items.breaks.title'),
+      description: t('settings.items.breaks.description'),
+      value: t('common.minutesShort', { value: `${shortBreakDuration}, ${longBreakDuration}` }),
+      onPress: (id: string) => {
+        if (id === 'short-break-duration-5') {
+          setShortBreakDuration(5);
+        }
+        if (id === 'short-break-duration-10') {
+          setShortBreakDuration(10);
+        }
+
+        if (id === 'long-break-duration-15') {
+          setLongBreakDuration(15);
+        }
+        if (id === 'long-break-duration-20') {
+          setLongBreakDuration(20);
+        }
+        if (id === 'long-break-duration-30') {
+          setLongBreakDuration(30);
+        }
+      },
       menuConfig: {
         menuTitle: '',
         menuItems: [
@@ -65,10 +129,12 @@ export default function SettingsScreen() {
               {
                 actionKey: 'short-break-duration-5',
                 actionTitle: t('common.minutesShort', { value: 5 }),
+                menuState: shortBreakDuration === 5 ? 'on' : undefined,
               },
               {
                 actionKey: 'short-break-duration-10',
                 actionTitle: t('common.minutesShort', { value: 10 }),
+                menuState: shortBreakDuration === 10 ? 'on' : undefined,
               },
               {
                 actionKey: 'short-break-duration-custom',
@@ -78,7 +144,6 @@ export default function SettingsScreen() {
                   type: 'IMAGE_SYSTEM',
                   imageValue: {
                     systemName: 'lock.fill',
-                    scale: 'small',
                   },
                 },
               },
@@ -92,14 +157,17 @@ export default function SettingsScreen() {
               {
                 actionKey: 'long-break-duration-15',
                 actionTitle: t('common.minutesShort', { value: 15 }),
+                menuState: longBreakDuration === 15 ? 'on' : undefined,
               },
               {
                 actionKey: 'long-break-duration-20',
                 actionTitle: t('common.minutesShort', { value: 20 }),
+                menuState: longBreakDuration === 20 ? 'on' : undefined,
               },
               {
                 actionKey: 'long-break-duration-30',
                 actionTitle: t('common.minutesShort', { value: 30 }),
+                menuState: longBreakDuration === 30 ? 'on' : undefined,
               },
               {
                 actionKey: 'long-break-duration-custom',
@@ -109,7 +177,6 @@ export default function SettingsScreen() {
                   type: 'IMAGE_SYSTEM',
                   imageValue: {
                     systemName: 'lock.fill',
-                    scale: 'small',
                   },
                 },
               },
@@ -121,7 +188,18 @@ export default function SettingsScreen() {
     {
       id: 3,
       title: 'Цикл',
-      value: '4',
+      value: `${focusLoops}`,
+      onPress: (id: string) => {
+        if (id === 'focus-loops-2') {
+          setFocusLoops(2);
+        }
+        if (id === 'focus-loops-3') {
+          setFocusLoops(3);
+        }
+        if (id === 'focus-loops-4') {
+          setFocusLoops(4);
+        }
+      },
       menuConfig: {
         menuTitle: '',
         menuItems: [
@@ -133,14 +211,17 @@ export default function SettingsScreen() {
               {
                 actionKey: 'focus-loops-2',
                 actionTitle: '2',
+                menuState: focusLoops === 2 ? 'on' : undefined,
               },
               {
                 actionKey: 'focus-loops-3',
                 actionTitle: '3',
+                menuState: focusLoops === 3 ? 'on' : undefined,
               },
               {
                 actionKey: 'focus-loops-4',
                 actionTitle: '4',
+                menuState: focusLoops === 4 ? 'on' : undefined,
               },
             ],
           },
@@ -152,7 +233,6 @@ export default function SettingsScreen() {
               type: 'IMAGE_SYSTEM',
               imageValue: {
                 systemName: 'lock.fill',
-                scale: 'small',
               },
             },
           },
@@ -164,7 +244,18 @@ export default function SettingsScreen() {
       id: 4,
       title: 'Тема приложения',
       description: 'Выберите тему приложения',
-      value: 'Авто',
+      value: t(`common.themes.${userTheme}`),
+      onPress: (id: string) => {
+        if (id === 'theme-light') {
+          setUserTheme('light');
+        }
+        if (id === 'theme-dark') {
+          setUserTheme('dark');
+        }
+        if (id === 'theme-auto') {
+          setUserTheme('auto');
+        }
+      },
       menuConfig: {
         menuTitle: '',
         menuItems: [
@@ -175,17 +266,20 @@ export default function SettingsScreen() {
             menuItems: [
               {
                 actionKey: 'theme-light',
-                actionTitle: 'Светлая',
+                actionTitle: t(`common.themes.light`),
+                menuState: userTheme === 'light' ? 'on' : undefined,
               },
               {
                 actionKey: 'theme-dark',
-                actionTitle: 'Темная',
+                actionTitle: t(`common.themes.dark`),
+                menuState: userTheme === 'dark' ? 'on' : undefined,
               },
             ],
           },
           {
             actionKey: 'theme-auto',
-            actionTitle: 'Авто',
+            actionTitle: t(`common.themes.auto`),
+            menuState: userTheme === 'auto' ? 'on' : undefined,
           },
         ],
       },
@@ -205,6 +299,7 @@ export default function SettingsScreen() {
     {
       id: 7,
       title: 'Поддержать разработчика',
+      disabled: true,
     },
   ];
   return (
@@ -225,4 +320,6 @@ export default function SettingsScreen() {
       </ScrollView>
     </View>
   );
-}
+};
+
+export default observer(SettingsScreen);

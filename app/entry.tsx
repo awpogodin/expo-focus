@@ -1,4 +1,4 @@
-import { addDays, format } from 'date-fns';
+import { addDays } from 'date-fns';
 import { useNavigation, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { upperFirst } from 'lodash';
@@ -10,29 +10,35 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 
 import { Text } from '../core/components/Text';
 import { View } from '../core/components/View';
+import { formatDate } from '../core/helpers/dates';
+import tasksStore from '../core/models/tasksStore';
 import { useTheme } from '../core/providers/ThemeProvider';
 
-const categories = [
-  { id: '1', name: 'Работа' },
-  { id: '2', name: 'Личное' },
-];
-
 export default function EntryModal() {
+  const { addTask, categories } = tasksStore;
+
   const { t } = useTranslation();
   const { typography, colors } = useTheme();
   const router = useRouter();
   const navigation = useNavigation();
 
   const [name, setName] = useState<string | undefined>();
-  const [categoryId, setCategoryId] = useState<string | undefined>();
-  const [dueDate, setDueDate] = useState<Date | undefined>();
+  const [category, setCategory] = useState<string | undefined>();
+  const [dueDate, setDueDate] = useState<string | undefined>();
   const [open, setOpen] = useState(false);
 
+  console.log('name = ', name);
+  console.log('dueDate = ', dueDate);
+
   const handleSubmit = () => {
+    if (!name) {
+      return;
+    }
+    addTask({ name, category, dueDate });
     router.push('../');
   };
 
-  const isSubmitDisabled = true;
+  const isSubmitDisabled = !name;
 
   useEffect(() => {
     navigation.setOptions({
@@ -48,7 +54,7 @@ export default function EntryModal() {
         </Pressable>
       ),
     });
-  }, []);
+  }, [isSubmitDisabled, handleSubmit]);
 
   const handleChangeName = (v: string) => {
     setName(v);
@@ -70,7 +76,7 @@ export default function EntryModal() {
       );
       return;
     }
-    setCategoryId(selectedActionId);
+    setCategory(selectedActionId);
   };
 
   const handleDateMenuAction: React.ComponentProps<typeof ContextMenuButton>['onPressMenuItem'] = ({
@@ -78,10 +84,10 @@ export default function EntryModal() {
   }) => {
     const selectedActionId = nativeEvent.actionKey;
     if (selectedActionId === 'date-today') {
-      setDueDate(new Date());
+      setDueDate(formatDate(new Date()));
     }
     if (selectedActionId === 'date-tomorrow') {
-      setDueDate(addDays(new Date(), 1));
+      setDueDate(formatDate(addDays(new Date(), 1)));
     }
     if (selectedActionId === 'date-custom') {
       setOpen(true);
@@ -90,8 +96,6 @@ export default function EntryModal() {
       setDueDate(undefined);
     }
   };
-
-  const category = categories.find(({ id }) => id === categoryId);
 
   const categoryMenuConfig: React.ComponentProps<typeof ContextMenuButton>['menuConfig'] = {
     menuTitle: '',
@@ -103,7 +107,6 @@ export default function EntryModal() {
           type: 'IMAGE_SYSTEM',
           imageValue: {
             systemName: 'plus',
-            scale: 'small',
           },
         },
       },
@@ -112,9 +115,9 @@ export default function EntryModal() {
         menuTitle: '',
         menuOptions: ['displayInline'],
         menuItems: [
-          ...categories.map(({ id, name }) => ({
-            actionKey: id.toString(),
-            actionTitle: name,
+          ...categories.map((categoryName) => ({
+            actionKey: categoryName,
+            actionTitle: categoryName,
           })),
         ],
       },
@@ -144,7 +147,6 @@ export default function EntryModal() {
               type: 'IMAGE_SYSTEM',
               imageValue: {
                 systemName: 'calendar',
-                scale: 'small',
               },
             },
           },
@@ -158,7 +160,6 @@ export default function EntryModal() {
           type: 'IMAGE_SYSTEM',
           imageValue: {
             systemName: 'trash',
-            scale: 'small',
           },
         },
       },
@@ -189,7 +190,7 @@ export default function EntryModal() {
               {({ pressed }) => (
                 <View mt="l" style={{ opacity: pressed ? 0.5 : 1 }}>
                   {category ? (
-                    <Text text={category.name} type="bodyLarge" />
+                    <Text text={category} type="bodyLarge" />
                   ) : (
                     <Text text={t('entry.category')} color="secondary" type="bodyLarge" />
                   )}
@@ -205,7 +206,7 @@ export default function EntryModal() {
               {({ pressed }) => (
                 <View mt="l" style={{ opacity: pressed ? 0.5 : 1 }}>
                   {dueDate ? (
-                    <Text text={format(dueDate, 'd.MM.yyyy')} type="bodyLarge" />
+                    <Text text={dueDate} type="bodyLarge" />
                   ) : (
                     <Text text={t('entry.dueDate')} color="secondary" type="bodyLarge" />
                   )}
@@ -218,11 +219,11 @@ export default function EntryModal() {
       <DatePicker
         modal
         open={open}
-        date={dueDate ?? new Date()}
+        date={new Date()}
         mode="date"
         onConfirm={(date) => {
           setOpen(false);
-          setDueDate(date);
+          setDueDate(formatDate(date));
         }}
         onCancel={() => {
           setOpen(false);

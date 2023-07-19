@@ -7,11 +7,19 @@ export const resources = {
           description: 'Тут будут отображаться Ваши задачи',
         },
 
+        sections: {
+          inbox: 'Входящие',
+          tomorrow: 'Завтра',
+          week: 'На этой неделе',
+          later: 'Позже',
+        },
+
         actionsMenu: {
           moveToTomorrow: 'Перенести на завтра',
           moveToWeek: 'Перенести на неделю',
           moveToLater: 'Перенести на позже',
           setDueDate: 'Установить срок',
+          edit: 'Редактировать',
           remove: 'Удалить',
         },
       },
@@ -28,6 +36,7 @@ export const resources = {
         save: 'Сохранить',
         back: 'Назад',
         cancel: 'Отменить',
+        confirm: 'Подвтердить',
       },
       entry: {
         screenTitle: 'Новая задача',
@@ -36,6 +45,9 @@ export const resources = {
         dueDate: 'Срок',
         categoryPromptTitle: 'Новая категория',
         categoryPromptSubtitle: 'Введите название категории',
+
+        removingConfirmation: 'Вы действительно хотите удалить задачу?',
+        scheduledTaskExist: 'Текущая запланированная задача будет возвращена',
 
         actionsMenu: {
           addCategory: 'Добавить категорию',
@@ -47,12 +59,28 @@ export const resources = {
       },
       settings: {
         screenTitle: 'Настройки',
+        items: {
+          focusDuration: {
+            title: 'Продолжительность focus',
+            description: 'Продолжительность времени фокусировки',
+          },
+
+          breaks: {
+            title: 'Продолжительность перерыва',
+            description: 'Продолжительность короткого и длинного перерывов',
+          },
+        },
       },
       common: {
         minutesShort: '{{value}} мин',
         configure: 'Настроить',
         shortBreak: 'Короткий перерыв',
         longBreak: 'Длинный перерыв',
+        themes: {
+          light: 'Светлая',
+          dark: 'Темная',
+          auto: 'Системная',
+        },
       },
     },
   },
@@ -64,11 +92,19 @@ export const resources = {
           description: 'Tasks will be displayed here',
         },
 
+        sections: {
+          inbox: 'Inbox',
+          tomorrow: 'Tomorrow',
+          week: 'On this week',
+          later: 'Later',
+        },
+
         actionsMenu: {
           moveToTomorrow: 'Move to tomorrow',
           moveToWeek: 'Move to week',
           moveToLater: 'Move to later',
           setDueDate: 'Set due date',
+          edit: 'Edit',
           remove: 'Remove',
         },
       },
@@ -85,6 +121,7 @@ export const resources = {
         save: 'Save',
         back: 'Back',
         cancel: 'Cancel',
+        confirm: 'Confirm',
       },
       entry: {
         screenTitle: 'New task',
@@ -93,6 +130,9 @@ export const resources = {
         dueDate: 'Due date',
         categoryPromptTitle: 'New category',
         categoryPromptSubtitle: "Enter category's name",
+
+        removingConfirmation: 'Do you really want to delete the task?',
+        scheduledTaskExist: 'The current scheduled task will be returned',
 
         actionsMenu: {
           addCategory: 'Add category',
@@ -104,12 +144,28 @@ export const resources = {
       },
       settings: {
         screenTitle: 'Settings',
+        items: {
+          focusDuration: {
+            title: 'Продолжительность focus',
+            description: 'Продолжительность времени фокусировки',
+          },
+
+          breaks: {
+            title: 'Продолжительность перерыва',
+            description: 'Продолжительность короткого и длинного перерывов',
+          },
+        },
       },
       common: {
         minutesShort: '{{value}} min',
         configure: 'Configure',
         shortBreak: 'Short break',
         longBreak: 'Long break',
+        themes: {
+          light: 'Light',
+          dark: 'Dark',
+          auto: 'Auto',
+        },
       },
     },
   },
