@@ -79,13 +79,13 @@ const HomeScreen = () => {
   // region timer
 
   useEffect(() => {
-    setInitialTimer(getMsFromMinutes(timerDuration));
     controls.reset();
+    setInitialTimer(getMsFromMinutes(timerDuration));
   }, [timerDuration]);
 
   useEffect(() => {
-    resetTimerIndex();
     controls.reset();
+    resetTimerIndex();
   }, [currentTaskId, focusLoops]);
 
   // начальное значение таймера в мс
@@ -149,22 +149,12 @@ const HomeScreen = () => {
     );
   };
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Pressable onPress={controls.reset}>
-          {({ pressed }) => (
-            <AntDesign
-              name="reload1"
-              size={25}
-              color={colors.primary}
-              style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-            />
-          )}
-        </Pressable>
-      ),
-    });
-  }, [colors, controls]);
+  const handleResetToDefault = () => {
+    controls.reset();
+    // TODO: проверить почему не сбрасывается время
+    setCurrentTaskId();
+    controls.reset();
+  };
 
   const controlContextMenuConfig: React.ComponentProps<typeof ContextMenuButton>['menuConfig'] = {
     menuTitle: '',
@@ -191,7 +181,7 @@ const HomeScreen = () => {
             icon: {
               type: 'IMAGE_SYSTEM',
               imageValue: {
-                systemName: 'arrow.counterclockwise',
+                systemName: 'stop',
               },
             },
           },
@@ -233,10 +223,10 @@ const HomeScreen = () => {
     ],
   };
 
-  return (
-    <View useSafeArea ph="l" color="background" flex={1}>
-      {!!scheduledTask && (
-        <View alignSelf="center">
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () =>
+        scheduledTask ? (
           <ContextMenuView
             previewConfig={defaultPreviewConfig}
             menuConfig={currentTaskMenuConfig}
@@ -254,8 +244,32 @@ const HomeScreen = () => {
               )}
             </View>
           </ContextMenuView>
-        </View>
-      )}
+        ) : null,
+      headerRight: () => (
+        <Pressable onPress={handleResetToDefault}>
+          {({ pressed }) => (
+            <AntDesign
+              name="reload1"
+              size={25}
+              color={colors.primary}
+              style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+            />
+          )}
+        </Pressable>
+      ),
+    });
+  }, [
+    colors,
+    handleResetToDefault,
+    scheduledTask,
+    category,
+    defaultPreviewConfig,
+    currentTaskMenuConfig,
+    handleTaskMenuAction,
+  ]);
+
+  return (
+    <View useSafeArea ph="l" color="background" flex={1}>
       <View flex={1} justifyContent="center">
         <Text
           align="center"
