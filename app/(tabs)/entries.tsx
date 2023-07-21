@@ -20,8 +20,6 @@ const EntriesScreen = () => {
   const { t } = useTranslation();
   const { sortedTasks, currentTaskId } = tasksStore;
 
-  console.log('tasks = ', sortedTasks);
-
   const sections = useMemo(() => {
     const result = [];
     const inboxTasks: Task[] = [];
