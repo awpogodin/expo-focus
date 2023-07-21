@@ -20,6 +20,7 @@ export type Theme = {
     primary: string;
     secondary: string;
     tertiary: string;
+    buttonPrimary: string;
     success: string;
     danger: string;
     background: string;
@@ -55,6 +56,7 @@ const themes: Record<ThemeNames, Theme> = {
       primary: colors.mineShaft,
       secondary: colors.silverChalice,
       tertiary: colors.alto,
+      buttonPrimary: colors.white,
       success: colors.fruitSalad,
       danger: colors.pomegranate,
       card: colors.white,
@@ -76,6 +78,7 @@ const themes: Record<ThemeNames, Theme> = {
       primary: colors.white,
       secondary: colors.silverChalice,
       tertiary: colors.alto,
+      buttonPrimary: colors.black,
       success: colors.fruitSalad,
       danger: colors.pomegranate,
       card: colors.black,

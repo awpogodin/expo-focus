@@ -26,6 +26,11 @@ class RootStore {
 
   focusLoops: number = 2; // 4
 
+  /**
+   * Был ли показан онбординг
+   */
+  isOnboardingAlreadyShown: boolean = false;
+
   constructor() {
     makeAutoObservable(this);
 
@@ -37,9 +42,14 @@ class RootStore {
         'shortBreakDuration',
         'longBreakDuration',
         'focusLoops',
+        'isOnboardingAlreadyShown',
       ],
     });
   }
+
+  setIsOnboardingAlreadyShown = (value: boolean) => {
+    this.isOnboardingAlreadyShown = value;
+  };
 
   setUserTheme = (theme: UserTheme) => {
     this.userTheme = theme;

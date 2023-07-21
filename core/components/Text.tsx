@@ -7,7 +7,7 @@ import { Theme, useTheme } from '../providers/ThemeProvider';
 
 type Color = Extract<
   keyof Theme['colors'],
-  'primary' | 'secondary' | 'tertiary' | 'success' | 'danger'
+  'primary' | 'secondary' | 'tertiary' | 'success' | 'danger' | 'buttonPrimary'
 >;
 
 export type TextProps = {

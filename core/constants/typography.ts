@@ -12,10 +12,10 @@ export const Typography = {
   },
   headlineLarge: {
     fontFamily: FontFamily.SFProSemibold,
-    fontSize: scale(24),
+    fontSize: scale(28),
     fontWeight: 'normal',
     letterSpacing: 0,
-    lineHeight: 32,
+    lineHeight: 36,
   },
   headlineMedium: {
     fontFamily: FontFamily.SFProSemibold,

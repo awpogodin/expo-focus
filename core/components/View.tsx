@@ -97,7 +97,7 @@ export const View: React.FC<ViewProps> = (props) => {
 
     useSafeArea && {
       paddingTop: Math.max(headerHeight, insets.top),
-      paddingBootom: insets.bottom,
+      paddingBottom: insets.bottom,
     },
 
     style,

@@ -4,6 +4,7 @@ import { useFonts } from 'expo-font';
 import { getLocales } from 'expo-localization';
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import i18n from 'i18next';
+import { observer } from 'mobx-react';
 import { useEffect } from 'react';
 import 'intl-pluralrules';
 import { initReactI18next, useTranslation } from 'react-i18next';
@@ -14,6 +15,7 @@ import { Text } from '../core/components/Text';
 import { FontFamily } from '../core/constants/fonts';
 import ThemeProvider from '../core/providers/ThemeProvider';
 import { resources } from '../core/resources/resources';
+import rootStore from '../core/rootStore';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -59,13 +61,20 @@ export default function RootLayout() {
   );
 }
 
-function RootLayoutNav() {
+const RootLayoutNav = observer(() => {
   const { t } = useTranslation();
+  const { isOnboardingAlreadyShown } = rootStore;
   const router = useRouter();
 
   const handleCancel = () => {
     router.push('../');
   };
+
+  useEffect(() => {
+    if (!isOnboardingAlreadyShown) {
+      router.push('/onboarding');
+    }
+  }, [isOnboardingAlreadyShown]);
 
   return (
     <SafeAreaProvider>
@@ -92,11 +101,19 @@ function RootLayoutNav() {
                   )}
                 </Pressable>
               ),
-              // gestureEnabled: false,
+            }}
+          />
+          <Stack.Screen
+            name="onboarding"
+            options={{
+              presentation: 'modal',
+              headerTransparent: true,
+              headerTitle: '',
+              gestureEnabled: false,
             }}
           />
         </Stack>
       </ThemeProvider>
     </SafeAreaProvider>
   );
-}
+});

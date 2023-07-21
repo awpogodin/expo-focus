@@ -43,7 +43,8 @@ export const resources = {
         save: 'Сохранить',
         back: 'Назад',
         cancel: 'Отменить',
-        confirm: 'Подвтердить',
+        confirm: 'Подтвердить',
+        continue: 'Продолжить',
       },
       entry: {
         screenTitle: 'Новая задача',
@@ -76,6 +77,25 @@ export const resources = {
           breaks: {
             title: 'Продолжительность перерыва',
             description: 'Продолжительность короткого и длинного перерывов',
+          },
+        },
+      },
+      onboarding: {
+        title: 'Добро пожаловать в Focus App',
+        items: {
+          tasks: {
+            title: 'Задачи',
+            description: 'Добавляйте и фокусируйтесь на задачах.',
+          },
+          focus: {
+            title: 'Focus & Health',
+            description:
+              'Используйте доказанную технику, чтобы лучше сосредоточиться и снизить стресс.',
+          },
+          design: {
+            title: 'Современный дизайн',
+            description:
+              'Минималистичный, простой в использовании и красивый интерфейс, которым приятно пользоваться.',
           },
         },
       },
@@ -142,6 +162,7 @@ export const resources = {
         back: 'Back',
         cancel: 'Cancel',
         confirm: 'Confirm',
+        continue: 'Continue',
       },
       entry: {
         screenTitle: 'New task',
@@ -174,6 +195,24 @@ export const resources = {
           breaks: {
             title: 'Продолжительность перерыва',
             description: 'Продолжительность короткого и длинного перерывов',
+          },
+        },
+      },
+      onboarding: {
+        title: 'Welcome to Focus App',
+        items: {
+          tasks: {
+            title: 'Tasks',
+            description: 'Add and focus on tasks.',
+          },
+          focus: {
+            title: 'Focus & Health',
+            description: 'Use a proven technique to focus better and reduce stress.',
+          },
+          design: {
+            title: 'Modern design',
+            description:
+              'Minimalistic, easy to use and beautiful interface, which is a pleasure to use.',
           },
         },
       },
