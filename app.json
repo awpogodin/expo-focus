@@ -17,14 +17,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.expowallet"
+      "bundleIdentifier": "com.awpogodin.expowallet"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.expowallet"
+      "package": "com.awpogodin.expowallet"
     },
     "web": {
       "bundler": "metro",
