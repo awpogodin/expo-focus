@@ -5,47 +5,26 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable } from 'react-native';
 import { ContextMenuView, ContextMenuButton } from 'react-native-ios-context-menu';
-import {
-  cancelAnimation,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-  Easing,
-  runOnJS,
-  useDerivedValue,
-} from 'react-native-reanimated';
-import { withPause } from 'react-native-redash';
 
 import { ProgressCircle } from '../../core/components/ProgressCircle';
 import { Text } from '../../core/components/Text';
 import { View } from '../../core/components/View';
 import { defaultPreviewConfig } from '../../core/helpers/contextMenu';
-import { getMsFromMinutes, getTimerItems } from '../../core/helpers/timer';
+import { formatTimerValue, getTimerItems } from '../../core/helpers/timer';
+import { useTimer } from '../../core/hooks/useTimer';
 import tasksStore from '../../core/models/tasksStore';
 import { useTheme } from '../../core/providers/ThemeProvider';
 import rootStore from '../../core/rootStore';
-
-// форматирование секунд в min:sec
-const formatTimerValue = (value: number): string => {
-  const getTime = (v: number) => {
-    const min = Math.floor((v / 60) << 0).toString();
-    const sec = Math.floor(v % 60).toString();
-    return { min: min.length === 1 ? `0${min}` : min, sec: sec.length === 1 ? `0${sec}` : sec };
-  };
-
-  const { min, sec } = getTime(value);
-  return `${min}:${sec}`;
-};
 
 const HomeScreen = () => {
   const { getTaskById, currentTaskId, setCurrentTaskId, doneTask, getCategoryById } = tasksStore;
   const { focusLoops, focusDuration, shortBreakDuration, longBreakDuration } = rootStore;
 
+  const [currentTimerIndex, setCurrentTimerIndex] = useState(0);
+
   const timerItems = useMemo(() => {
     return getTimerItems(focusLoops);
   }, [focusLoops]);
-
-  const [currentTimerIndex, setCurrentTimerIndex] = useState(0);
 
   const timerDuration = useMemo(() => {
     const type = timerItems[currentTimerIndex];
@@ -57,6 +36,27 @@ const HomeScreen = () => {
     }
     return focusDuration;
   }, [currentTimerIndex, timerItems]);
+
+  const handleNextTimer = () => {
+    setCurrentTimerIndex((index) => {
+      if (index === timerItems.length - 1) {
+        return 0;
+      }
+      return index + 1;
+    });
+  };
+
+  const handleResetToDefault = () => {
+    controls.reset();
+    setCurrentTaskId();
+    setCurrentTimerIndex(0);
+  };
+
+  const { controls, isPlay, isStarted, elapsedTime } = useTimer(timerDuration, handleNextTimer);
+
+  useEffect(() => {
+    controls.reset();
+  }, [currentTaskId]);
 
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -96,91 +96,6 @@ const HomeScreen = () => {
     if (actionKey === 'control-reset') {
       controls.reset();
     }
-  };
-
-  // region timer
-
-  // начальное значение таймера в мс
-  const [initialTimer, setInitialTimer] = useState(getMsFromMinutes(focusDuration));
-
-  // запущен ли таймер
-  const [isPlay, setIsPlay] = useState(false);
-  const [isStarted, setIsStarted] = useState(false);
-
-  const [elapsedTime, setElapsedTime] = useState(initialTimer / 1000);
-
-  const animElapsedTime = useSharedValue(initialTimer);
-  const animPaused = useSharedValue(false);
-
-  useEffect(() => {
-    controls.reset();
-  }, [currentTaskId, initialTimer]);
-
-  useEffect(() => {
-    setInitialTimer(getMsFromMinutes(timerDuration));
-  }, [timerDuration]);
-
-  useEffect(() => {
-    return () => cancelAnimation(animElapsedTime);
-  }, []);
-
-  const controls = {
-    play: (value: boolean) => {
-      setIsPlay(value);
-      animPaused.value = !value;
-      if (value && !isStarted) {
-        startAnimation();
-        setIsStarted(true);
-      }
-    },
-    reset: () => {
-      animPaused.value = true;
-      cancelAnimation(animElapsedTime);
-      setIsPlay(false);
-      setIsStarted(false);
-      animElapsedTime.value = initialTimer;
-    },
-  };
-
-  const handleNextTimer = () => {
-    setCurrentTimerIndex((index) => {
-      if (index === timerItems.length - 1) {
-        return 0;
-      }
-      return index + 1;
-    });
-  };
-
-  const updateElapsedTime = (value: number) => {
-    setElapsedTime(value);
-  };
-
-  useDerivedValue(() => {
-    // Останавливаем таймер, если время вышло
-    if (animElapsedTime.value === 0) {
-      runOnJS(controls.reset)();
-      runOnJS(handleNextTimer)();
-    }
-    runOnJS(updateElapsedTime)(Math.floor(animElapsedTime.value / 1000));
-  });
-
-  const startAnimation = () => {
-    animElapsedTime.value = withPause(
-      withRepeat(
-        withTiming(0, {
-          duration: initialTimer,
-          easing: Easing.linear,
-        }),
-        1
-      ),
-      animPaused
-    );
-  };
-
-  const handleResetToDefault = () => {
-    controls.reset();
-    setCurrentTaskId();
-    setCurrentTimerIndex(0);
   };
 
   const controlContextMenuConfig: React.ComponentProps<typeof ContextMenuButton>['menuConfig'] = {
