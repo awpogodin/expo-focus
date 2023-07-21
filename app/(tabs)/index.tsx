@@ -3,7 +3,7 @@ import { useNavigation } from 'expo-router';
 import { observer } from 'mobx-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
 import { ContextMenuView, ContextMenuButton } from 'react-native-ios-context-menu';
 import {
   cancelAnimation,
@@ -14,31 +14,52 @@ import {
   runOnJS,
   useDerivedValue,
 } from 'react-native-reanimated';
-import { ReText, withPause } from 'react-native-redash';
+import { withPause } from 'react-native-redash';
 
 import { ProgressCircle } from '../../core/components/ProgressCircle';
 import { Text } from '../../core/components/Text';
 import { View } from '../../core/components/View';
 import { defaultPreviewConfig } from '../../core/helpers/contextMenu';
-import { getMsFromMinutes } from '../../core/helpers/timer';
+import { getMsFromMinutes, getTimerItems } from '../../core/helpers/timer';
 import tasksStore from '../../core/models/tasksStore';
 import { useTheme } from '../../core/providers/ThemeProvider';
 import rootStore from '../../core/rootStore';
 
+// форматирование секунд в min:sec
+const formatTimerValue = (value: number): string => {
+  const getTime = (v: number) => {
+    const min = Math.floor((v / 60) << 0).toString();
+    const sec = Math.floor(v % 60).toString();
+    return { min: min.length === 1 ? `0${min}` : min, sec: sec.length === 1 ? `0${sec}` : sec };
+  };
+
+  const { min, sec } = getTime(value);
+  return `${min}:${sec}`;
+};
+
 const HomeScreen = () => {
   const { getTaskById, currentTaskId, setCurrentTaskId, doneTask, getCategoryById } = tasksStore;
-  const {
-    timerDuration,
-    nextTimerItem,
-    resetTimerIndex,
-    currentTimerItem,
-    timerItems,
-    currentTimerIndex,
-    focusLoops,
-  } = rootStore;
+  const { focusLoops, focusDuration, shortBreakDuration, longBreakDuration } = rootStore;
+
+  const timerItems = useMemo(() => {
+    return getTimerItems(focusLoops);
+  }, [focusLoops]);
+
+  const [currentTimerIndex, setCurrentTimerIndex] = useState(0);
+
+  const timerDuration = useMemo(() => {
+    const type = timerItems[currentTimerIndex];
+    if (type === 'shortBreak') {
+      return shortBreakDuration;
+    }
+    if (type === 'longBreak') {
+      return longBreakDuration;
+    }
+    return focusDuration;
+  }, [currentTimerIndex, timerItems]);
 
   const { t } = useTranslation();
-  const { colors, typography } = useTheme();
+  const { colors } = useTheme();
   const navigation = useNavigation();
 
   const scheduledTask = useMemo(() => {
@@ -69,7 +90,8 @@ const HomeScreen = () => {
     typeof ContextMenuButton
   >['onPressMenuItem'] = ({ nativeEvent: { actionKey } }) => {
     if (actionKey === 'control-next') {
-      controls.next();
+      controls.reset();
+      handleNextTimer();
     }
     if (actionKey === 'control-reset') {
       controls.reset();
@@ -78,25 +100,29 @@ const HomeScreen = () => {
 
   // region timer
 
-  useEffect(() => {
-    controls.reset();
-    setInitialTimer(getMsFromMinutes(timerDuration));
-  }, [timerDuration]);
-
-  useEffect(() => {
-    controls.reset();
-    resetTimerIndex();
-  }, [currentTaskId, focusLoops]);
-
   // начальное значение таймера в мс
-  const [initialTimer, setInitialTimer] = useState(getMsFromMinutes(timerDuration));
+  const [initialTimer, setInitialTimer] = useState(getMsFromMinutes(focusDuration));
 
   // запущен ли таймер
   const [isPlay, setIsPlay] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
 
+  const [elapsedTime, setElapsedTime] = useState(initialTimer / 1000);
+
   const animElapsedTime = useSharedValue(initialTimer);
   const animPaused = useSharedValue(false);
+
+  useEffect(() => {
+    controls.reset();
+  }, [currentTaskId, initialTimer]);
+
+  useEffect(() => {
+    setInitialTimer(getMsFromMinutes(timerDuration));
+  }, [timerDuration]);
+
+  useEffect(() => {
+    return () => cancelAnimation(animElapsedTime);
+  }, []);
 
   const controls = {
     play: (value: boolean) => {
@@ -108,32 +134,34 @@ const HomeScreen = () => {
       }
     },
     reset: () => {
+      animPaused.value = true;
+      cancelAnimation(animElapsedTime);
       setIsPlay(false);
       setIsStarted(false);
-      cancelAnimation(animElapsedTime);
       animElapsedTime.value = initialTimer;
-    },
-    next: () => {
-      setIsPlay(false);
-      setIsStarted(false);
-      cancelAnimation(animElapsedTime);
-      animElapsedTime.value = initialTimer;
-      nextTimerItem();
     },
   };
 
-  const elapsedTime = useDerivedValue(() => {
+  const handleNextTimer = () => {
+    setCurrentTimerIndex((index) => {
+      if (index === timerItems.length - 1) {
+        return 0;
+      }
+      return index + 1;
+    });
+  };
+
+  const updateElapsedTime = (value: number) => {
+    setElapsedTime(value);
+  };
+
+  useDerivedValue(() => {
     // Останавливаем таймер, если время вышло
     if (animElapsedTime.value === 0) {
-      runOnJS(controls.next)();
+      runOnJS(controls.reset)();
+      runOnJS(handleNextTimer)();
     }
-    const getTime = (ms: number) => {
-      const min = Math.floor((ms / 1000 / 60) << 0).toString();
-      const sec = Math.floor((ms / 1000) % 60).toString();
-      return { min: min.length === 1 ? `0${min}` : min, sec: sec.length === 1 ? `0${sec}` : sec };
-    };
-    const { min, sec } = getTime(animElapsedTime.value);
-    return `${min}:${sec}`;
+    runOnJS(updateElapsedTime)(Math.floor(animElapsedTime.value / 1000));
   });
 
   const startAnimation = () => {
@@ -151,9 +179,8 @@ const HomeScreen = () => {
 
   const handleResetToDefault = () => {
     controls.reset();
-    // TODO: проверить почему не сбрасывается время
     setCurrentTaskId();
-    controls.reset();
+    setCurrentTimerIndex(0);
   };
 
   const controlContextMenuConfig: React.ComponentProps<typeof ContextMenuButton>['menuConfig'] = {
@@ -167,7 +194,7 @@ const HomeScreen = () => {
           {
             actionKey: 'control-next',
             actionTitle: t('home.controlContextMenu.next'),
-            menuAttributes: currentTimerItem === 'focus' ? ['disabled'] : [],
+            menuAttributes: timerItems[currentTimerIndex] === 'focus' ? ['disabled'] : [],
             icon: {
               type: 'IMAGE_SYSTEM',
               imageValue: {
@@ -178,6 +205,7 @@ const HomeScreen = () => {
           {
             actionKey: 'control-reset',
             actionTitle: t('home.controlContextMenu.reset'),
+            menuAttributes: isStarted ? [] : ['disabled'],
             icon: {
               type: 'IMAGE_SYSTEM',
               imageValue: {
@@ -276,15 +304,9 @@ const HomeScreen = () => {
           type="bodyLarge"
           color="secondary"
           mb="l"
-          text={t(`common.timerTitle.${currentTimerItem}`)}
+          text={t(`common.timerTitle.${timerItems[currentTimerIndex] ?? 'focus'}`)}
         />
-        <ReText
-          style={StyleSheet.flatten([
-            typography.headlineExtraLarge,
-            { textAlign: 'center', color: colors.primary },
-          ])}
-          text={elapsedTime}
-        />
+        <Text align="center" type="headlineExtraLarge" text={formatTimerValue(elapsedTime)} />
         <View row justifyContent="center" mt="s">
           {timerItems.map((type, index) => {
             if (type !== 'focus') {
