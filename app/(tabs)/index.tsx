@@ -1,4 +1,5 @@
 import { AntDesign } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useNavigation } from 'expo-router';
 import { observer } from 'mobx-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -38,6 +39,7 @@ const HomeScreen = () => {
   }, [currentTimerIndex, timerItems]);
 
   const handleNextTimer = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setCurrentTimerIndex((index) => {
       if (index === timerItems.length - 1) {
         return 0;

@@ -77,7 +77,7 @@ export const useTimer = (duration: number, onTimeOver: () => void): Timer => {
 
   useDerivedValue(() => {
     // Останавливаем таймер, если время вышло
-    if (animElapsedTime.value === 0) {
+    if (animElapsedTime.value === 0 && !animPaused.value) {
       runOnJS(controls.reset)();
       runOnJS(onTimeOver)();
     }

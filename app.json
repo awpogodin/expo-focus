@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expo-wallet",
-    "slug": "expo-wallet",
+    "name": "expo-focus",
+    "slug": "expo-focus",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,14 +17,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.awpogodin.expowallet"
+      "bundleIdentifier": "com.awpogodin.focus"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.awpogodin.expowallet"
+      "package": "com.awpogodin.focus"
     },
     "web": {
       "bundler": "metro",
@@ -32,6 +32,11 @@
     },
     "plugins": [
       "expo-localization"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c0a6737f-4bcb-4408-8680-353598e74910"
+      }
+    }
   }
 }
