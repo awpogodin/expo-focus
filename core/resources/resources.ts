@@ -115,6 +115,22 @@ export const resources = {
           longBreak: 'Сделайте перерыв ☕️',
         },
       },
+      notifications: {
+        timeOver: {
+          focus: {
+            title: 'Focus завершен!',
+            body: 'Сделайте перерыв, отложите дела и отдохните.',
+          },
+          shortBreak: {
+            title: 'Пора вернуться к задаче!',
+            body: 'Сфокусируйтесь на задаче.',
+          },
+          longBreak: {
+            title: 'Цикл завершен!',
+            body: 'Начните фокусировку, если задача еще не выполнена, либо завершите ее.',
+          },
+        },
+      },
     },
   },
   en: {
@@ -230,6 +246,22 @@ export const resources = {
           focus: 'Focus',
           shortBreak: 'Take a short break ☕️',
           longBreak: 'Take a break ☕️',
+        },
+      },
+      notifications: {
+        timeOver: {
+          focus: {
+            title: 'Focus is completed!',
+            body: 'Take a break, put things aside and relax.',
+          },
+          shortBreak: {
+            title: "It's time to get back to the focus!",
+            body: 'Focus on the task at hand.',
+          },
+          longBreak: {
+            title: 'The cycle is completed!',
+            body: 'Start focusing if the task has not been completed yet, or finish it.',
+          },
         },
       },
     },

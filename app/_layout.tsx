@@ -2,6 +2,7 @@ import 'react-native-get-random-values';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { getLocales } from 'expo-localization';
+import * as Notifications from 'expo-notifications';
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import i18n from 'i18next';
 import { observer } from 'mobx-react';
@@ -13,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Text } from '../core/components/Text';
 import { FontFamily } from '../core/constants/fonts';
+import { useNotifications } from '../core/hooks/useNotifications';
 import ThemeProvider from '../core/providers/ThemeProvider';
 import { resources } from '../core/resources/resources';
 import rootStore from '../core/rootStore';
@@ -27,6 +29,14 @@ export const unstable_settings = {
   initialRouteName: '(tabs)',
 };
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
@@ -40,6 +50,7 @@ i18n
   });
 
 export default function RootLayout() {
+  useNotifications(true);
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     [FontFamily.SFProRegular]: require('../assets/fonts/SF-Pro-Display-Regular.otf'),

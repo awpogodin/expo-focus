@@ -12,6 +12,7 @@ import { Text } from '../../core/components/Text';
 import { View } from '../../core/components/View';
 import { defaultPreviewConfig } from '../../core/helpers/contextMenu';
 import { formatTimerValue, getTimerItems } from '../../core/helpers/timer';
+import { useNotifications } from '../../core/hooks/useNotifications';
 import { useTimer } from '../../core/hooks/useTimer';
 import tasksStore from '../../core/models/tasksStore';
 import { useTheme } from '../../core/providers/ThemeProvider';
@@ -20,6 +21,8 @@ import rootStore from '../../core/rootStore';
 const HomeScreen = () => {
   const { getTaskById, currentTaskId, setCurrentTaskId, doneTask, getCategoryById } = tasksStore;
   const { focusLoops, focusDuration, shortBreakDuration, longBreakDuration } = rootStore;
+
+  const { scheduleNotification } = useNotifications();
 
   const [currentTimerIndex, setCurrentTimerIndex] = useState(0);
 
@@ -38,7 +41,11 @@ const HomeScreen = () => {
     return focusDuration;
   }, [currentTimerIndex, timerItems]);
 
-  const handleNextTimer = () => {
+  const handleNextTimer = async () => {
+    scheduleNotification({
+      title: t(`notifications.timeOver.${timerItems[currentTimerIndex] ?? 'focus'}.title`),
+      body: t(`notifications.timeOver.${timerItems[currentTimerIndex] ?? 'focus'}.body`),
+    });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setCurrentTimerIndex((index) => {
       if (index === timerItems.length - 1) {
