@@ -78,6 +78,23 @@ export const resources = {
             title: 'Продолжительность перерыва',
             description: 'Продолжительность короткого и длинного перерывов',
           },
+
+          cycle: {
+            title: 'Цикл',
+            prompt: {
+              title: 'Цикл',
+              subTitle: 'Введите кол-во Focus в цикле (1-9)',
+            },
+          },
+
+          theme: {
+            title: 'Тема приложения',
+            description: 'Выберите тему приложения',
+          },
+
+          haptics: {
+            title: 'Вибрация',
+          },
         },
       },
       onboarding: {
@@ -111,23 +128,25 @@ export const resources = {
         },
         timerTitle: {
           focus: 'Focus',
-          shortBreak: 'Сделайте небольшой перерыв ☕️',
-          longBreak: 'Сделайте перерыв ☕️',
+          shortBreak: 'Короткий перерыв',
+          longBreak: 'Длинный перерыв',
         },
+        enabled: 'Включена',
+        disabled: 'Выключена',
       },
       notifications: {
         timeOver: {
           focus: {
             title: 'Focus завершен!',
-            body: 'Сделайте перерыв, отложите дела и отдохните.',
+            body: 'Сделайте перерыв, отложите дела и отдохните',
           },
           shortBreak: {
             title: 'Пора вернуться к задаче!',
-            body: 'Сфокусируйтесь на задаче.',
+            body: 'Сфокусируйтесь на задаче',
           },
           longBreak: {
             title: 'Цикл завершен!',
-            body: 'Начните фокусировку, если задача еще не выполнена, либо завершите ее.',
+            body: 'Начните фокусировку, если задача еще не выполнена, либо завершите ее',
           },
         },
       },
@@ -204,13 +223,30 @@ export const resources = {
         screenTitle: 'Settings',
         items: {
           focusDuration: {
-            title: 'Продолжительность focus',
-            description: 'Продолжительность времени фокусировки',
+            title: 'Focus duration',
+            description: 'Duration of focus time',
           },
 
           breaks: {
-            title: 'Продолжительность перерыва',
-            description: 'Продолжительность короткого и длинного перерывов',
+            title: 'Duration of the break',
+            description: 'Duration of short and long breaks',
+          },
+
+          cycle: {
+            title: 'Cycle',
+            prompt: {
+              title: 'Cycle',
+              subTitle: 'Enter count of Focus in the cycle (1-9)',
+            },
+          },
+
+          theme: {
+            title: 'App theme',
+            description: 'Choose theme of the app',
+          },
+
+          haptics: {
+            title: 'Vibration',
           },
         },
       },
@@ -244,23 +280,25 @@ export const resources = {
         },
         timerTitle: {
           focus: 'Focus',
-          shortBreak: 'Take a short break ☕️',
-          longBreak: 'Take a break ☕️',
+          shortBreak: 'Short break',
+          longBreak: 'Long break',
         },
+        enabled: 'Enabled',
+        disabled: 'Disabled',
       },
       notifications: {
         timeOver: {
           focus: {
             title: 'Focus is completed!',
-            body: 'Take a break, put things aside and relax.',
+            body: 'Take a break, put things aside and relax',
           },
           shortBreak: {
             title: "It's time to get back to the focus!",
-            body: 'Focus on the task at hand.',
+            body: 'Focus on the task at hand',
           },
           longBreak: {
             title: 'The cycle is completed!',
-            body: 'Start focusing if the task has not been completed yet, or finish it.',
+            body: 'Start focusing if the task has not been completed yet, or finish it',
           },
         },
       },

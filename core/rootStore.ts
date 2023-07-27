@@ -31,6 +31,11 @@ class RootStore {
    */
   isOnboardingAlreadyShown: boolean = false;
 
+  /**
+   * Включена ли вибрация
+   */
+  isHapticEnabled: boolean = true;
+
   constructor() {
     makeAutoObservable(this);
 
@@ -43,12 +48,17 @@ class RootStore {
         'longBreakDuration',
         'focusLoops',
         'isOnboardingAlreadyShown',
+        'isHapticEnabled',
       ],
     });
   }
 
   setIsOnboardingAlreadyShown = (value: boolean) => {
     this.isOnboardingAlreadyShown = value;
+  };
+
+  setIsHapticEnabled = (value: boolean) => {
+    this.isHapticEnabled = value;
   };
 
   setUserTheme = (theme: UserTheme) => {

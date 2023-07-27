@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView } from 'react-native';
+import { Alert, ScrollView } from 'react-native';
 import { useMMKV } from 'react-native-mmkv';
 
 import { MenuItem } from '../../core/components/MenuItem';
@@ -27,9 +27,9 @@ const SettingsScreen: React.FC = () => {
     setLongBreakDuration,
     focusLoops,
     setFocusLoops,
+    setIsHapticEnabled,
+    isHapticEnabled,
   } = rootStore;
-  console.log('userTheme = ', userTheme);
-  console.log('storage = ', storage);
 
   const items: Item[] = [
     {
@@ -187,7 +187,7 @@ const SettingsScreen: React.FC = () => {
     },
     {
       id: 3,
-      title: 'Цикл',
+      title: t('settings.items.cycle.title'),
       value: `${focusLoops}`,
       onPress: (id: string) => {
         if (id === 'focus-loops-2') {
@@ -198,6 +198,21 @@ const SettingsScreen: React.FC = () => {
         }
         if (id === 'focus-loops-4') {
           setFocusLoops(4);
+        }
+        if (id === 'focus-loops-custom') {
+          Alert.prompt(
+            t('settings.items.cycle.prompt.title'),
+            t('settings.items.cycle.prompt.subTitle'),
+            (v) => {
+              const value = isNaN(Number(v)) ? 0 : Number(v);
+              if (value > 1 && value < 10) {
+                setFocusLoops(value);
+              }
+            },
+            'plain-text',
+            undefined,
+            'numeric'
+          );
         }
       },
       menuConfig: {
@@ -242,8 +257,8 @@ const SettingsScreen: React.FC = () => {
     },
     {
       id: 4,
-      title: 'Тема приложения',
-      description: 'Выберите тему приложения',
+      title: t('settings.items.theme.title'),
+      description: t('settings.items.theme.description'),
       value: t(`common.themes.${userTheme}`),
       onPress: (id: string) => {
         if (id === 'theme-light') {
@@ -286,21 +301,29 @@ const SettingsScreen: React.FC = () => {
     },
     {
       id: 5,
-      title: 'Подписка',
-      value: 'Не активна',
-      disabled: true,
+      title: t('settings.items.haptics.title'),
+      value: t(`common.${isHapticEnabled ? 'enabled' : 'disabled'}`),
+      onPress: () => {
+        setIsHapticEnabled(!isHapticEnabled);
+      },
     },
-    {
-      id: 6,
-      title: 'Написать отзыв',
-      description: 'Оставьте отзыв о приложении',
-      disabled: true,
-    },
-    {
-      id: 7,
-      title: 'Поддержать разработчика',
-      disabled: true,
-    },
+    // {
+    //   id: 6,
+    //   title: 'Подписка',
+    //   value: 'Не активна',
+    //   disabled: true,
+    // },
+    // {
+    //   id: 7,
+    //   title: 'Написать отзыв',
+    //   description: 'Оставьте отзыв о приложении',
+    //   disabled: true,
+    // },
+    // {
+    //   id: 8,
+    //   title: 'Поддержать разработчика',
+    //   disabled: true,
+    // },
   ];
   return (
     <View flex={1} color="background" ph="l">
