@@ -16,9 +16,12 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
+    "@react-native-async-storage/async-storage": "1.17.11",
     "@react-navigation/native": "^6.0.2",
+    "burnt": "^0.11.7",
     "date-fns": "^2.30.0",
     "expo": "~48.0.18",
+    "expo-build-properties": "~0.6.0",
     "expo-dev-client": "~2.2.1",
     "expo-device": "~5.2.1",
     "expo-font": "~11.1.1",

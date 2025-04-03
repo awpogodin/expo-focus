@@ -1,5 +1,4 @@
 import { AntDesign } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import { useNavigation } from 'expo-router';
 import { observer } from 'mobx-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -12,9 +11,9 @@ import { Text } from '../../core/components/Text';
 import { View } from '../../core/components/View';
 import { defaultPreviewConfig } from '../../core/helpers/contextMenu';
 import { formatTimerValue, getTimerItems } from '../../core/helpers/timer';
-import { useHaptics } from '../../core/hooks/useHaptics';
 import { useNotifications } from '../../core/hooks/useNotifications';
 import { useTimer } from '../../core/hooks/useTimer';
+import { useToast } from '../../core/hooks/useToast';
 import tasksStore from '../../core/models/tasksStore';
 import { useTheme } from '../../core/providers/ThemeProvider';
 import rootStore from '../../core/rootStore';
@@ -24,7 +23,7 @@ const HomeScreen = () => {
   const { focusLoops, focusDuration, shortBreakDuration, longBreakDuration } = rootStore;
 
   const { scheduleNotification } = useNotifications();
-  const { notification } = useHaptics();
+  const { showToast, showAlert } = useToast();
 
   const [currentTimerIndex, setCurrentTimerIndex] = useState(0);
 
@@ -48,7 +47,11 @@ const HomeScreen = () => {
       title: t(`notifications.timeOver.${timerItems[currentTimerIndex] ?? 'focus'}.title`),
       body: t(`notifications.timeOver.${timerItems[currentTimerIndex] ?? 'focus'}.body`),
     });
-    notification();
+    showAlert({
+      title: t(`notifications.timeOver.${timerItems[currentTimerIndex] ?? 'focus'}.title`),
+      message: t(`notifications.timeOver.${timerItems[currentTimerIndex] ?? 'focus'}.body`),
+      // preset: 'done',
+    });
     setCurrentTimerIndex((index) => {
       if (index === timerItems.length - 1) {
         return 0;
@@ -58,6 +61,9 @@ const HomeScreen = () => {
   };
 
   const handleResetToDefault = () => {
+    showToast({
+      title: t('toasts.timerReset'),
+    });
     controls.reset();
     setCurrentTaskId();
     setCurrentTimerIndex(0);

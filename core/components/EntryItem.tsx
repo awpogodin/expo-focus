@@ -12,6 +12,7 @@ import { Text } from './Text';
 import { View } from './View';
 import { defaultPreviewConfig } from '../helpers/contextMenu';
 import { formatDate, parseDate } from '../helpers/dates';
+import { useToast } from '../hooks/useToast';
 import tasksStore, { Task } from '../models/tasksStore';
 import { useTheme } from '../providers/ThemeProvider';
 
@@ -26,6 +27,7 @@ export const EntryItem: React.FC<Props> = observer(({ data }) => {
   const { removeTask, setCurrentTaskId, doneTask, currentTaskId, getCategoryById, updateTask } =
     tasksStore;
   const { id, name, categoryId, dueDate } = data;
+  const { showToast } = useToast();
 
   const [open, setOpen] = useState(false);
 
@@ -151,6 +153,7 @@ export const EntryItem: React.FC<Props> = observer(({ data }) => {
         (buttonIndex) => {
           if (buttonIndex === 1) {
             removeTask(id);
+            showToast({ title: t('toasts.taskRemoved'), haptic: 'warning' });
           }
         }
       );

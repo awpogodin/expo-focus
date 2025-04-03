@@ -150,6 +150,12 @@ export const resources = {
           },
         },
       },
+      toasts: {
+        taskCreated: 'Задача создана',
+        taskUpdated: 'Задача обновлена',
+        timerReset: 'Таймер сброшен',
+        taskRemoved: 'Задача удалена',
+      },
     },
   },
   en: {
@@ -301,6 +307,12 @@ export const resources = {
             body: 'Start focusing if the task has not been completed yet, or finish it',
           },
         },
+      },
+      toasts: {
+        taskCreated: 'Task created',
+        taskUpdated: 'Task updated',
+        timerReset: 'Timer reset',
+        taskRemoved: 'Task removed',
       },
     },
   },

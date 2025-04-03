@@ -12,6 +12,7 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { Text } from '../core/components/Text';
 import { View } from '../core/components/View';
 import { formatDate } from '../core/helpers/dates';
+import { useToast } from '../core/hooks/useToast';
 import tasksStore, { Task } from '../core/models/tasksStore';
 import { useTheme } from '../core/providers/ThemeProvider';
 
@@ -23,23 +24,23 @@ const EntryModal = () => {
   const router = useRouter();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
-
-  console.log('params = ', params);
+  const { showToast } = useToast();
 
   useEffect(() => {
-    if (params?.id) {
-      const currentTask = getTaskById(params.id as string);
-      if (!currentTask) {
-        return;
-      }
-      navigation.setOptions({
-        headerTitle: t('entry.screenTitleEditing'),
-      });
-      setEditingTask(currentTask);
-      setName(currentTask?.name);
-      setCategoryId(currentTask?.categoryId);
-      setDueDate(currentTask?.dueDate);
+    if (!params?.id) {
+      return;
     }
+    const currentTask = getTaskById(params.id as string);
+    if (!currentTask) {
+      return;
+    }
+    navigation.setOptions({
+      headerTitle: t('entry.screenTitleEditing'),
+    });
+    setEditingTask(currentTask);
+    setName(currentTask?.name);
+    setCategoryId(currentTask?.categoryId);
+    setDueDate(currentTask?.dueDate);
   }, [params]);
 
   const [name, setName] = useState<string | undefined>();
@@ -53,10 +54,6 @@ const EntryModal = () => {
     [categoryId, getCategoryById]
   );
 
-  console.log('name = ', name);
-  console.log('category = ', category);
-  console.log('dueDate = ', dueDate);
-
   const handleSubmit = () => {
     if (!name) {
       return;
@@ -67,6 +64,9 @@ const EntryModal = () => {
       addTask({ name, categoryId, dueDate });
     }
     router.push('../');
+    showToast({
+      title: t(editingTask ? 'toasts.taskUpdated' : 'toasts.taskCreated'),
+    });
   };
 
   const isSubmitDisabled = !name;
@@ -102,7 +102,6 @@ const EntryModal = () => {
         (v) => {
           const categoryName = upperFirst(v.substring(0, 12));
           const createdCategory = addCategory(categoryName);
-          console.log('createdCategory = ', createdCategory);
           setCategoryId(createdCategory.id);
         },
         'plain-text'
